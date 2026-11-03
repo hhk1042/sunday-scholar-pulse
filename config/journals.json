@@ -1,0 +1,260 @@
+[
+  {
+    "id": "bae",
+    "name": "Building and Environment",
+    "domain": "건축",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0360-1323",
+      "1873-684X"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/03601323",
+    "focus": "실내외 열쾌적성, 친환경 건축 성능, 도시 미기후"
+  },
+  {
+    "id": "enb",
+    "name": "Energy and Buildings",
+    "domain": "건축",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0378-7788",
+      "1872-6178"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/03787788",
+    "focus": "건물 에너지 모델링, 제로에너지빌딩, HVAC 최적 제어"
+  },
+  {
+    "id": "aic",
+    "name": "Automation in Construction",
+    "domain": "건축",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0926-5805",
+      "1872-7891"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/09265805",
+    "focus": "BIM, 디지털 트윈, 건설 AI 및 로보틱스"
+  },
+  {
+    "id": "asr",
+    "name": "Architectural Science Review",
+    "domain": "건축",
+    "secondary_domain": null,
+    "publisher": "Taylor & Francis",
+    "issns": [
+      "0003-8628",
+      "1758-9622"
+    ],
+    "rss_url": "https://www.tandfonline.com/feed/rss/tasr20",
+    "focus": "건축 환경공학, 패시브 디자인, 전과정 탄소 평가"
+  },
+  {
+    "id": "cities",
+    "name": "Cities",
+    "domain": "도시",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0264-2751",
+      "1873-6084"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/02642751",
+    "focus": "도시 정책, 도시 계획, 공간 불평등 및 거버넌스"
+  },
+  {
+    "id": "us",
+    "name": "Urban Studies",
+    "domain": "도시",
+    "secondary_domain": null,
+    "publisher": "SAGE",
+    "issns": [
+      "0042-0980",
+      "1360-063X"
+    ],
+    "rss_url": "https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=usja&type=etoc&feed=rss",
+    "focus": "도시 경제·사회, 주거 정의, 젠트리피케이션 및 지역 연구"
+  },
+  {
+    "id": "lup",
+    "name": "Landscape and Urban Planning",
+    "domain": "도시",
+    "secondary_domain": "조경",
+    "publisher": "Elsevier",
+    "issns": [
+      "0169-2046",
+      "1872-6062"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/01692046",
+    "focus": "도시·조경 통합 계획, 생태 네트워크, 그린 인프라"
+  },
+  {
+    "id": "scs",
+    "name": "Sustainable Cities and Society",
+    "domain": "도시",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "2210-6707",
+      "2210-6715"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/22106707",
+    "focus": "탄소중립 도시, 스마트시티, 도시 열섬 및 에너지 전환"
+  },
+  {
+    "id": "ceus",
+    "name": "Computers, Environment and Urban Systems",
+    "domain": "도시",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0198-9715",
+      "1873-7587"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/01989715",
+    "focus": "GeoAI, 도시 공간 빅데이터, 디지털 트윈 시뮬레이션"
+  },
+  {
+    "id": "ufug",
+    "name": "Urban Forestry & Urban Greening",
+    "domain": "조경",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "1618-8667",
+      "1610-8167"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/16188667",
+    "focus": "도시숲, 가로수 수관 냉각 효과, 도시 녹지 건강성"
+  },
+  {
+    "id": "le",
+    "name": "Landscape Ecology",
+    "domain": "조경",
+    "secondary_domain": null,
+    "publisher": "Springer",
+    "issns": [
+      "0921-2973",
+      "1572-9761"
+    ],
+    "rss_url": "https://link.springer.com/search.rss?facet-content-type=Article&facet-journal-id=10980&channel-name=Landscape+Ecology",
+    "focus": "경관 생태학, 서식지 연결성, 생물다양성 및 기후 적응"
+  },
+  {
+    "id": "jem",
+    "name": "Journal of Environmental Management",
+    "domain": "조경",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0301-4797",
+      "1095-8630"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/03014797",
+    "focus": "자연기반해법(NbS), 생태 복원, 수생태 및 유역 환경 관리"
+  },
+  {
+    "id": "ncc",
+    "name": "Nature Climate Change",
+    "domain": "기후변화",
+    "secondary_domain": null,
+    "publisher": "Nature Portfolio",
+    "issns": [
+      "1758-678X",
+      "1758-6798"
+    ],
+    "rss_url": "https://www.nature.com/nclimate.rss",
+    "focus": "전지구 및 도시 기후변화 영향, 적응 전략, 기후 정책"
+  },
+  {
+    "id": "gec",
+    "name": "Global Environmental Change",
+    "domain": "기후변화",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "0959-3780",
+      "1872-9495"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/09593780",
+    "focus": "사회-생태 시스템 취약성, 기후 정의, 지속가능성 전환"
+  },
+  {
+    "id": "cc",
+    "name": "Climatic Change",
+    "domain": "기후변화",
+    "secondary_domain": null,
+    "publisher": "Springer",
+    "issns": [
+      "0165-0009",
+      "1573-1480"
+    ],
+    "rss_url": "https://link.springer.com/search.rss?facet-content-type=Article&facet-journal-id=10584&channel-name=Climatic+Change",
+    "focus": "기후 시나리오(CMIP6), 극한기상 리스크, 부문별 적응"
+  },
+  {
+    "id": "erl",
+    "name": "Environmental Research Letters",
+    "domain": "기후변화",
+    "secondary_domain": null,
+    "publisher": "IOP Publishing",
+    "issns": [
+      "1748-9326"
+    ],
+    "rss_url": "https://iopscience.iop.org/journal/rss/1748-9326",
+    "focus": "탄소배출 추계, 도시 기후 완화·적응 실증 분석"
+  },
+  {
+    "id": "ijdrr",
+    "name": "International Journal of Disaster Risk Reduction (IJDRR)",
+    "domain": "재난재해",
+    "secondary_domain": null,
+    "publisher": "Elsevier",
+    "issns": [
+      "2212-4209"
+    ],
+    "rss_url": "https://rss.sciencedirect.com/publication/science/22124209",
+    "focus": "재난 위험 경감, 지역사회 회복탄력성, 조기경보 체계"
+  },
+  {
+    "id": "nh",
+    "name": "Natural Hazards",
+    "domain": "재난재해",
+    "secondary_domain": null,
+    "publisher": "Springer",
+    "issns": [
+      "0921-030X",
+      "1573-0840"
+    ],
+    "rss_url": "https://link.springer.com/search.rss?facet-content-type=Article&facet-journal-id=11069&channel-name=Natural+Hazards",
+    "focus": "홍수·폭염·산불·지진 등 자연재해 위험도 모델링"
+  },
+  {
+    "id": "ra",
+    "name": "Risk Analysis",
+    "domain": "재난재해",
+    "secondary_domain": null,
+    "publisher": "Wiley",
+    "issns": [
+      "0272-4332",
+      "1539-6924"
+    ],
+    "rss_url": "https://onlinelibrary.wiley.com/feed/15396924/most-recent",
+    "focus": "복합 재난 확률론적 리스크 평가, 인프라 취약성 분석"
+  },
+  {
+    "id": "disasters",
+    "name": "Disasters",
+    "domain": "재난재해",
+    "secondary_domain": null,
+    "publisher": "Wiley",
+    "issns": [
+      "0361-3666",
+      "1467-7717"
+    ],
+    "rss_url": "https://onlinelibrary.wiley.com/feed/14677717/most-recent",
+    "focus": "재난 거버넌스, 이재민 구호 및 재난 후 도시 복구"
+  }
+]

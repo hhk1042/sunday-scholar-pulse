@@ -1,0 +1,2298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> Sunday Scholar Pulse | 건축·도시·조경·기후·재난 주간 논문 트렌드 리포트</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .fade-in {
+      animation: fadeIn 0.22s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+
+  <!-- Top Header -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between py-3 gap-3">
+        <!-- Brand -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-teal-600 to-sky-700 flex items-center justify-center text-white font-bold shadow-sm">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900">Sunday Scholar Pulse</h1>
+              <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                매주 일요일 19:00 KST 자동 발행
+              </span>
+            </div>
+            <p class="text-xs text-slate-500">건축 · 도시 · 조경 · 기후변화 · 재난재해 19개 주류 저널 전수 요약 및 주간 트렌드 분석</p>
+          </div>
+        </div>
+
+        <!-- Week Selector & Quick Actions -->
+        <div class="flex items-center flex-wrap gap-2">
+          <div class="relative">
+            <label for="weekSelect" class="sr-only">주차 선택</label>
+            <select id="weekSelect" class="text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200/70 text-slate-800 rounded-lg px-3 py-2 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="2026-W44">2026년 11월 1주차 (10.26 ~ 11.01) · 최신호</option>
+              <option value="2026-W43">2026년 10월 4주차 (10.19 ~ 10.25)</option>
+              <option value="2026-W42">2026년 10월 3주차 (10.12 ~ 10.18)</option>
+            </select>
+          </div>
+
+          <button id="btnRunBatchSim" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            <span>일요일 배치 시뮬레이션</span>
+          </button>
+
+          <button id="btnOpenAlertModal" type="button" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white transition">
+            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span>일요일 알림·뉴스레터</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1.5 border-t border-slate-100 text-xs sm:text-sm" aria-label="주요 메뉴">
+        <button type="button" data-tab="overview" class="nav-tab px-3 py-1.5 rounded-lg font-semibold bg-emerald-50 text-emerald-700 transition whitespace-nowrap">
+          📊 주간 트렌드 총평 & 논문 탐색
+        </button>
+        <button type="button" data-tab="analytics" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          📈 키워드·저널 시각화 분석
+        </button>
+        <button type="button" data-tab="journals" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          📚 타겟 19개 저널 현황
+        </button>
+        <button type="button" data-tab="bookmarks" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap flex items-center gap-1.5">
+          <span>🔖 내 북마크·연구노트</span>
+          <span id="bookmarkCountBadge" class="px-1.5 py-0.2 rounded-full text-xs bg-amber-100 text-amber-800 font-bold">0</span>
+        </button>
+        <button type="button" data-tab="pipeline" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          ⚙️ 무료 자동화 파이프라인 설계·코드
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Status Banner -->
+    <div id="batchStatusBanner" class="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-900 text-white rounded-2xl p-4 sm:p-5 shadow-md flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            GitHub Actions Cron 정상 작동 중
+          </span>
+          <span id="currentWeekBadge" class="text-xs text-slate-300 font-medium">발행일: 2026년 11월 1일 (일) 19:00 KST</span>
+        </div>
+        <h2 id="weekHeadline" class="text-base sm:text-xl font-bold text-white pt-1">
+          "도시 미기후 디지털 트윈과 AI 기반 복합재난 조기경보, 그린 인프라의 정량적 탄소·열환경 효과 검증"
+        </h2>
+        <p id="weekSubheadline" class="text-xs sm:text-sm text-slate-300">
+          5대 분야 19개 주류 저널에서 금주 출판된 전체 논문 <strong id="bannerTotalCount" class="text-emerald-300 font-semibold">0</strong>편 전수 수집 및 구조화 요약 완료 (OpenAlex + Crossref + RSS + Gemini 2.5 Flash)
+        </p>
+      </div>
+      <div class="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-3 shrink-0">
+        <div class="bg-white/10 backdrop-blur rounded-xl px-3 py-2 text-center border border-white/10">
+          <div class="text-xs text-slate-300">금주 수집 논문</div>
+          <div id="statTotalPapers" class="text-lg sm:text-2xl font-bold text-emerald-300">24편</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur rounded-xl px-3 py-2 text-center border border-white/10">
+          <div class="text-xs text-slate-300">활성 저널</div>
+          <div id="statActiveJournals" class="text-lg sm:text-2xl font-bold text-sky-300">19개</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur rounded-xl px-3 py-2 text-center border border-white/10">
+          <div class="text-xs text-slate-300">핵심 융합 키워드</div>
+          <div id="statTopKeyword" class="text-sm sm:text-base font-bold text-amber-300 truncate mt-1">Urban Heat & AI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: OVERVIEW (Weekly Trend Synthesis + Full Paper Explorer) -->
+    <section id="tab-overview" class="space-y-6 fade-in">
+
+      <!-- Weekly Trend Synthesis Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">WEEKLY TREND SYNTHESIS</span>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">한 주간의 논문 트렌드 종합 리포트</h3>
+          </div>
+          <button id="btnToggleSynthesis" type="button" class="text-xs font-medium text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-md hover:bg-slate-200/60 transition">
+            요약 리포트 접기 ▲
+          </button>
+        </div>
+
+        <div id="synthesisBody" class="p-5 space-y-5">
+          <!-- 3 Pillar Cards: Topic / Methodology / Issue -->
+          <div id="trendPillarsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Cross-Disciplinary Matrix & Key Takeaways -->
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h4 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span>금주 분야 간 융합(Cross-Domain) 핵심 트렌드 & 핫 키워드 클릭 필터</span>
+              </h4>
+              <span class="text-xs text-slate-500">키워드를 클릭하면 아래 논문 목록이 즉시 필터링됩니다</span>
+            </div>
+            <p id="weeklyNarrativeText" class="text-xs sm:text-sm text-slate-700 leading-relaxed"></p>
+            <div id="trendingKeywordPills" class="flex flex-wrap gap-1.5 pt-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter & Search Controls for ALL Weekly Papers -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span>금주 출판 논문 전수 리스트</span>
+              <span id="filteredPaperCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">24편</span>
+            </h3>
+            <p class="text-xs text-slate-500">선정된 19개 저널에서 해당 주간에 출판된 모든 논문의 [주제 · 주요방법론 · 핵심이슈] 구조화 요약입니다.</p>
+          </div>
+
+          <!-- View Mode & Sort & Export -->
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-100">
+              <button type="button" id="btnViewCard" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-900 shadow-sm transition">
+                카드 요약형
+              </button>
+              <button type="button" id="btnViewTable" class="px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition">
+                전체 표(Table) 비교형
+              </button>
+            </div>
+
+            <select id="sortSelect" aria-label="정렬 기준" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="date-desc">출판일 최신순</option>
+              <option value="impact-desc">트렌드 연관도 높은순</option>
+              <option value="journal-asc">저널명 가나다/ABC순</option>
+            </select>
+
+            <button type="button" id="btnExportWeeklyMd" class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition">
+              <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span>주간 리포트 MD 복사</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Domain Category Pills -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-1" id="domainFilterContainer">
+          <button type="button" data-domain="ALL" class="domain-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white transition">
+            전체 분야 (All)
+          </button>
+          <button type="button" data-domain="건축" class="domain-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🏛️ 건축 (Architecture)
+          </button>
+          <button type="button" data-domain="도시" class="domain-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🌆 도시 (Urban)
+          </button>
+          <button type="button" data-domain="조경" class="domain-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🌳 조경 (Landscape)
+          </button>
+          <button type="button" data-domain="기후변화" class="domain-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🌍 기후변화 (Climate Change)
+          </button>
+          <button type="button" data-domain="재난재해" class="domain-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🚨 재난재해 (Disaster)
+          </button>
+        </div>
+
+        <!-- Search Input + Journal Filter + Methodology Filter -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+          <div class="sm:col-span-5 relative">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="논문 제목, 주제, 방법론(예: ENVI-met, GNN, InSAR), 이슈 검색..."
+              class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <button type="button" id="btnClearSearch" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs px-1">✕</button>
+          </div>
+
+          <div class="sm:col-span-4">
+            <select id="journalFilterSelect" aria-label="저널 필터" class="w-full py-2 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="ALL">전체 19개 타겟 저널 보기</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-3 flex gap-2">
+            <select id="methodFilterSelect" aria-label="방법론 유형 필터" class="w-full py-2 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="ALL">전체 방법론 유형</option>
+              <option value="AI/머신러닝">AI / 딥러닝 / 공간빅데이터</option>
+              <option value="시뮬레이션/모델링">미기후·에너지·수문 시뮬레이션</option>
+              <option value="원격탐사/GIS">위성 원격탐사 / GIS 공간분석</option>
+              <option value="실증/현장계측">현장 계측 / 리빙랩 / 설문·정책</option>
+            </select>
+            <button type="button" id="btnResetFilters" title="필터 초기화" class="px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl shrink-0 transition">
+              초기화
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Papers Container (Card Grid or Compact Table) -->
+      <div id="papersCardGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Populated by JS -->
+      </div>
+
+      <div id="papersTableWrapper" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                <th class="py-3 px-4 whitespace-nowrap">분야 / 저널</th>
+                <th class="py-3 px-4 min-w-[240px]">논문 제목 & 연구 주제 (Topic)</th>
+                <th class="py-3 px-4 min-w-[200px]">주요 방법론 (Methodology)</th>
+                <th class="py-3 px-4 min-w-[220px]">핵심 이슈 및 시사점 (Issue)</th>
+                <th class="py-3 px-4 text-center whitespace-nowrap">관리</th>
+              </tr>
+            </thead>
+            <tbody id="papersTableBody" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: ANALYTICS (Keyword & Journal Visualizations) -->
+    <section id="tab-analytics" class="hidden space-y-6 fade-in">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">📈 주간 연구 키워드 & 방법론 트렌드 시각화</h3>
+            <p class="text-xs text-slate-500">최근 4주간 19개 저널에서 출현 빈도가 급증한 연구 키워드 및 5대 분야별 논문 비중입니다.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+            <h4 class="text-sm font-bold text-slate-800 mb-1">금주 핵심 키워드 Top 8 출현 빈도</h4>
+            <p class="text-xs text-slate-500 mb-3">논문 초록 및 구조화 요약에서 추출된 주요 연구 키워드</p>
+            <div class="relative h-72">
+              <canvas id="chartKeywords"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+            <h4 class="text-sm font-bold text-slate-800 mb-1">5대 분야별 주간 출판 논문 분포 & 방법론 비중</h4>
+            <p class="text-xs text-slate-500 mb-3">분야별 논문 편수 및 채택된 연구 방법론 분류</p>
+            <div class="relative h-72">
+              <canvas id="chartDomains"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Methodology Shift Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+        <h4 class="text-sm sm:text-base font-bold text-slate-900">🔍 금주 주목해야 할 방법론(Methodology) & 이슈 매트릭스</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                <th class="py-2.5 px-3">분야</th>
+                <th class="py-2.5 px-3">주류 연구 주제 (What)</th>
+                <th class="py-2.5 px-3">핵심 방법론 트렌드 (How)</th>
+                <th class="py-2.5 px-3">대두되는 정책·실무 이슈 (Why Now)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-slate-700">
+              <tr>
+                <td class="py-3 px-3 font-semibold text-indigo-700 whitespace-nowrap">🏛️ 건축</td>
+                <td class="py-3 px-3">기존 건축물 그린리모델링, 재실자 열쾌적성, 건설 로보틱스·BIM</td>
+                <td class="py-3 px-3">EnergyPlus + 강화학습(RL) 최적제어, 3D Point Cloud 자동 분할</td>
+                <td class="py-3 px-3">폭염 시 냉방 피크부하 저감 및 전과정 내재탄소(Embodied Carbon) 규제 대응</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 font-semibold text-sky-700 whitespace-nowrap">🌆 도시</td>
+                <td class="py-3 px-3">15분 도시 접근성 불평등, 도시 열섬(UHI) 완화, 보행환경 체감 안전</td>
+                <td class="py-3 px-3">모바일 위치 빅데이터 + Graph Neural Network(GNN), Street View Vision-LLM</td>
+                <td class="py-3 px-3">기후취약계층(고령자·저소득층)의 공간적 열 불평등(Thermal Inequity) 해소</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 font-semibold text-emerald-700 whitespace-nowrap">🌳 조경</td>
+                <td class="py-3 px-3">도시숲 수관(Canopy) 냉각 효율, 그린 인프라(GI) 다중 생태계서비스</td>
+                <td class="py-3 px-3">ENVI-met 5.6 미기후 모의 + 드론 초분광/열화상(UAV LiDAR/TIR) 계측</td>
+                <td class="py-3 px-3">단순 면적 확대를 넘어 수종 구성·배치 구조에 따른 탄소흡수 및 폭염저감 실증</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 font-semibold text-amber-700 whitespace-nowrap">🌍 기후변화</td>
+                <td class="py-3 px-3">복합 극한기후(가뭄+폭염, 폭우+폭풍해일), 도시 적응 경로(Adaptation Pathways)</td>
+                <td class="py-3 px-3">CMIP6 고해상도 상세화(Downscaling) + 사회경제 취약성 통합 지수</td>
+                <td class="py-3 px-3">임계점(Tipping Point) 돌파 시 기존 도시 인프라 설계기준의 한계와 단계적 적응</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-3 font-semibold text-rose-700 whitespace-nowrap">🚨 재난재해</td>
+                <td class="py-3 px-3">도시 내수침수 실시간 예측, 산불·산사태 연쇄재난, 재난 후 회복탄력성</td>
+                <td class="py-3 px-3">Physics-informed AI 수문모델, SAR 위성 변위 탐지, 에이전트 기반 대피 시뮬레이션</td>
+                <td class="py-3 px-3">골든타임 확보를 위한 동네 단위(Hyper-local) 조기경보 및 취약시설 우선 대피 체계</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TARGET 19 JOURNALS STATUS -->
+    <section id="tab-journals" class="hidden space-y-6 fade-in">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">📚 선정된 5대 분야 19개 메인스트림 저널 모니터링 현황</h3>
+            <p class="text-xs text-slate-500">저널 카드를 클릭하면 해당 저널에서 금주 출판된 논문 목록으로 바로 이동합니다. (*Landscape and Urban Planning*은 도시·조경 공통 핵심 저널로 관리됩니다.)</p>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            OpenAlex ISSN 필터 + 출판사 RSS 이중 수집 연동 완료
+          </span>
+        </div>
+
+        <div id="journalsDirectoryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: BOOKMARKS & RESEARCH NOTES -->
+    <section id="tab-bookmarks" class="hidden space-y-6 fade-in">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">🔖 저장한 관심 논문 & 개인 연구노트</h3>
+            <p class="text-xs text-slate-500">북마크한 논문과 작성한 연구 메모는 브라우저에 자동 보관되며 Markdown이나 CSV/BibTeX로 내보낼 수 있습니다.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="btnExportBookmarksMd" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition">
+              북마크 논문 Markdown 복사
+            </button>
+            <button type="button" id="btnClearBookmarks" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 transition">
+              전체 비우기
+            </button>
+          </div>
+        </div>
+
+        <div id="bookmarksListContainer" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: ZERO-COST AUTOMATION PIPELINE & CODE -->
+    <section id="tab-pipeline" class="hidden space-y-6 fade-in">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">⚙️ 무료·관리 최소형(Serverless) 주간 자동화 아키텍처</h3>
+            <p class="text-xs text-slate-500">별도 유료 서버나 DB 관리 없이 GitHub Actions + 정적 배포(Vercel/GitHub Pages)만으로 매주 일요일 저녁 자동 업데이트되는 구조입니다.</p>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+            인프라 비용 $0 / 월 · LLM API 비용 약 $0.15 / 주
+          </span>
+        </div>
+
+        <!-- Architecture Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-bold text-emerald-700">STEP 1 · 매주 일요일 19:00 KST</div>
+            <div class="text-sm font-bold text-slate-900">GitHub Actions 스케줄러</div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              <code>cron: '0 10 * * 0'</code> (UTC 10:00 = KST 19:00) 트리거가 작동하여 Python 수집 스크립트를 실행합니다.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-bold text-sky-700">STEP 2 · 19개 저널 전수 수집</div>
+            <div class="text-sm font-bold text-slate-900">OpenAlex API + RSS 병행</div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              19개 저널의 고유 ISSN으로 지난 7일간 출판된 모든 논문의 제목, 초록, 저자, DOI를 무료로 수집합니다.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-bold text-indigo-700">STEP 3 · 구조화 요약 & 트렌드 종합</div>
+            <div class="text-sm font-bold text-slate-900">Gemini 2.5 Flash API</div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              ① 각 논문별 [주제·방법론·이슈] JSON 요약 후, ② 전체 요약을 다시 묶어 주간 트렌드 리포트를 생성합니다.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-bold text-amber-700">STEP 4 · 자동 배포 & 알림 발송</div>
+            <div class="text-sm font-bold text-slate-900">JSON 커밋 + 뉴스레터/슬랙</div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              <code>data/weeks/2026-W44.json</code>으로 자동 커밋되어 웹사이트가 즉시 갱신되고 이메일/슬랙 알림을 보냅니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- Ready-to-use Code Snippets -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-slate-200 px-4 py-2.5 flex items-center justify-between text-xs">
+              <span class="font-mono font-semibold">.github/workflows/sunday_digest.yml</span>
+              <button type="button" data-copy-target="codeGithubAction" class="btn-copy-code px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-white transition">코드 복사</button>
+            </div>
+            <pre id="codeGithubAction" class="p-4 bg-slate-950 text-slate-200 text-xs font-mono overflow-x-auto leading-relaxed">name: Weekly Journal Digest (Sunday 19:00 KST)
+on:
+  schedule:
+    - cron: '0 10 * * 0' # 매주 일요일 19:00 KST (10:00 UTC)
+  workflow_dispatch:     # 수동 즉시 실행 지원
+
+jobs:
+  build-weekly-digest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests feedparser google-genai
+      - name: Fetch 19 Journals & Summarize with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python scripts/fetch_and_summarize.py
+      - name: Commit updated weekly JSON & deploy
+        run: |
+          git config user.name "sunday-scholar-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/
+          git commit -m "chore: update weekly digest" || exit 0
+          git push</pre>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-slate-200 px-4 py-2.5 flex items-center justify-between text-xs">
+              <span class="font-mono font-semibold">scripts/fetch_and_summarize.py (핵심 파이프라인)</span>
+              <button type="button" data-copy-target="codePythonScript" class="btn-copy-code px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-white transition">코드 복사</button>
+            </div>
+            <pre id="codePythonScript" class="p-4 bg-slate-950 text-slate-200 text-xs font-mono overflow-x-auto leading-relaxed">import datetime, json, os, requests
+from google import genai
+
+# 5대 분야 19개 타겟 저널 ISSN 목록
+JOURNALS_ISSN = [
+  "0360-1323", "0378-7788", "0926-5805", "0003-8628", # 건축
+  "0264-2751", "0042-0980", "0169-2046", "2210-6707", "0198-9715", # 도시
+  "1618-8667", "0921-2973", "0301-4797", # 조경
+  "1758-678X", "0959-3780", "0165-0009", "1748-9326", # 기후변화
+  "2212-4209", "0921-030X", "0272-4332", "0361-3666"  # 재난재해
+]
+
+def fetch_weekly_papers():
+    end_date = datetime.date.today()
+    start_date = end_date - datetime.timedelta(days=7)
+    issn_filter = "|".join(JOURNALS_ISSN)
+    url = (
+      f"https://api.openalex.org/works?filter=primary_location.source.issn:{issn_filter},"
+      f"from_publication_date:{start_date},to_publication_date:{end_date}&per-page=200"
+    )
+    return requests.get(url, timeout=30).json().get("results", [])
+
+# 개별 논문 [주제, 주요방법론, 핵심이슈] 요약 후 Map-Reduce 주간 트렌드 생성</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Paper Detail & Research Note Modal -->
+  <div id="paperDetailModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap" id="modalBadges"></div>
+        <button type="button" id="btnClosePaperModal" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">✕ 닫기</button>
+      </div>
+      <div class="p-6 overflow-y-auto custom-scrollbar space-y-5" id="modalContentBody">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Sunday Alert & Newsletter Preview Modal -->
+  <div id="alertModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold">🔔 일요일 저녁 19:00 KST 정기 알림 설정 & 뉴스레터 미리보기</h3>
+          <p class="text-xs text-slate-300">매주 일요일 요약 완료 즉시 이메일, Slack, Telegram으로 주간 트렌드 브리핑을 받아보세요.</p>
+        </div>
+        <button type="button" id="btnCloseAlertModal" class="text-slate-300 hover:text-white p-1">✕</button>
+      </div>
+      <div class="p-6 overflow-y-auto custom-scrollbar space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="alertEmailInput" class="block text-xs font-semibold text-slate-700 mb-1">수신 이메일 주소</label>
+            <input id="alertEmailInput" type="email" value="researcher@urban-climate.kr" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div>
+            <label for="alertChannelSelect" class="block text-xs font-semibold text-slate-700 mb-1">연동 알림 채널</label>
+            <select id="alertChannelSelect" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="email+slack">이메일 뉴스레터 + Slack Webhook 동시 발송</option>
+              <option value="email">이메일 뉴스레터 단독 발송 (Resend 무료 티어)</option>
+              <option value="telegram">Telegram 봇 브리핑 메시지 발송</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-700">📩 이번 주 일요일 19:00 발송본 미리보기</span>
+            <span class="text-xs text-slate-500">자동 생성 템플릿</span>
+          </div>
+          <div id="newsletterPreviewBox" class="text-xs text-slate-700 space-y-2 bg-white p-3.5 rounded-lg border border-slate-200 leading-relaxed">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btnTestSendAlert" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition">
+            설정 저장 및 테스트 알림 발송 시뮬레이션
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 hidden">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg border border-slate-700 flex items-center gap-2.5 text-xs sm:text-sm">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+      <span id="toastMessage">처리되었습니다.</span>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. TARGET 19 JOURNALS METADATA
+    // ==========================================
+    const TARGET_JOURNALS = [
+      // 건축 (4)
+      { id: "bae", name: "Building and Environment", domain: "건축", publisher: "Elsevier", issn: "0360-1323", focus: "실내외 열쾌적성, 친환경 건축 성능, 도시 미기후" },
+      { id: "enb", name: "Energy and Buildings", domain: "건축", publisher: "Elsevier", issn: "0378-7788", focus: "건물 에너지 모델링, 제로에너지빌딩, HVAC 최적 제어" },
+      { id: "aic", name: "Automation in Construction", domain: "건축", publisher: "Elsevier", issn: "0926-5805", focus: "BIM, 디지털 트윈, 건설 AI 및 로보틱스" },
+      { id: "asr", name: "Architectural Science Review", domain: "건축", publisher: "Taylor & Francis", issn: "0003-8628", focus: "건축 환경공학, 패시브 디자인, 전과정 탄소 평가" },
+      // 도시 (5)
+      { id: "cities", name: "Cities", domain: "도시", publisher: "Elsevier", issn: "0264-2751", focus: "도시 정책, 도시 계획, 공간 불평등 및 거버넌스" },
+      { id: "us", name: "Urban Studies", domain: "도시", publisher: "SAGE", issn: "0042-0980", focus: "도시 경제·사회, 주거 정의, 젠트리피케이션 및 지역 연구" },
+      { id: "lup", name: "Landscape and Urban Planning", domain: "도시", secondaryDomain: "조경", publisher: "Elsevier", issn: "0169-2046", focus: "도시·조경 통합 계획, 생태 네트워크, 그린 인프라" },
+      { id: "scs", name: "Sustainable Cities and Society", domain: "도시", publisher: "Elsevier", issn: "2210-6707", focus: "탄소중립 도시, 스마트시티, 도시 열섬 및 에너지 전환" },
+      { id: "ceus", name: "Computers, Environment and Urban Systems", domain: "도시", publisher: "Elsevier", issn: "0198-9715", focus: "GeoAI, 도시 공간 빅데이터, 디지털 트윈 시뮬레이션" },
+      // 조경 (3 + LUP)
+      { id: "ufug", name: "Urban Forestry & Urban Greening", domain: "조경", publisher: "Elsevier", issn: "1618-8667", focus: "도시숲, 가로수 수관 냉각 효과, 도시 녹지 건강성" },
+      { id: "le", name: "Landscape Ecology", domain: "조경", publisher: "Springer", issn: "0921-2973", focus: "경관 생태학, 서식지 연결성, 생물다양성 및 기후 적응" },
+      { id: "jem", name: "Journal of Environmental Management", domain: "조경", publisher: "Elsevier", issn: "0301-4797", focus: "자연기반해법(NbS), 생태 복원, 수생태 및 유역 환경 관리" },
+      // 기후변화 (4)
+      { id: "ncc", name: "Nature Climate Change", domain: "기후변화", publisher: "Nature Portfolio", issn: "1758-678X", focus: "전지구 및 도시 기후변화 영향, 적응 전략, 기후 정책" },
+      { id: "gec", name: "Global Environmental Change", domain: "기후변화", publisher: "Elsevier", issn: "0959-3780", focus: "사회-생태 시스템 취약성, 기후 정의, 지속가능성 전환" },
+      { id: "cc", name: "Climatic Change", domain: "기후변화", publisher: "Springer", issn: "0165-0009", focus: "기후 시나리오(CMIP6), 극한기상 리스크, 부문별 적응" },
+      { id: "erl", name: "Environmental Research Letters", domain: "기후변화", publisher: "IOP Publishing", issn: "1748-9326", focus: "탄소배출 추계, 도시 기후 완화·적응 실증 분석" },
+      // 재난재해 (4)
+      { id: "ijdrr", name: "International Journal of Disaster Risk Reduction (IJDRR)", domain: "재난재해", publisher: "Elsevier", issn: "2212-4209", focus: "재난 위험 경감, 지역사회 회복탄력성, 조기경보 체계" },
+      { id: "nh", name: "Natural Hazards", domain: "재난재해", publisher: "Springer", issn: "0921-030X", focus: "홍수·폭염·산불·지진 등 자연재해 위험도 모델링" },
+      { id: "ra", name: "Risk Analysis", domain: "재난재해", publisher: "Wiley", issn: "0272-4332", focus: "복합 재난 확률론적 리스크 평가, 인프라 취약성 분석" },
+      { id: "disasters", name: "Disasters", domain: "재난재해", publisher: "Wiley", issn: "0361-3666", focus: "재난 거버넌스, 이재민 구호 및 재난 후 도시 복구" }
+    ];
+
+    // ==========================================
+    // 2. WEEKLY DATASETS (Full Coverage of 19 Journals)
+    // ==========================================
+    const WEEKLY_DATA = {
+      "2026-W44": {
+        weekLabel: "2026년 11월 1주차 (10.26 ~ 11.01)",
+        publishDate: "2026년 11월 1일 (일) 19:00 KST",
+        headline: "도시 미기후 디지털 트윈과 AI 기반 복합재난 조기경보, 그린 인프라의 정량적 탄소·열환경 효과 검증",
+        narrative: "이번 주 19개 저널에서 출판된 논문들을 종합하면, ① [주제 측면]에서는 폭염과 집중호우가 동시에 또는 연쇄적으로 발생하는 '복합 극한기후(Compound Extremes)'에 대응하는 건축·도시·조경 통합 설계가 가장 큰 비중을 차지했습니다. ② [방법론 측면]에서는 기존의 단일 물리 시뮬레이션(ENVI-met, EnergyPlus, SWMM)이 느린 연산 속도를 극복하기 위해 Graph Neural Network(GNN) 및 Physics-informed AI 대리모델(Surrogate Model)과 결합되는 추세가 뚜렷합니다. ③ [핵심 이슈 측면]에서는 그린 인프라와 도시 재개발이 오히려 저소득·고령층의 열 불평등이나 그린 젠트리피케이션을 유발할 수 있다는 '기후 정의(Climate Justice)' 검증 연구가 다수 보고되었습니다.",
+        topKeywords: [
+          { word: "Urban Heat Island (도시열섬)", count: 14 },
+          { word: "Nature-based Solutions (자연기반해법)", count: 12 },
+          { word: "GeoAI & Graph Neural Network", count: 11 },
+          { word: "Compound Flood-Heat Risk (복합재난)", count: 9 },
+          { word: "Building Energy & Embodied Carbon", count: 8 },
+          { word: "Thermal Inequity (열 불평등)", count: 7 },
+          { word: "ENVI-met & LiDAR Canopy", count: 6 },
+          { word: "15-Minute City Resilience", count: 5 }
+        ],
+        pillars: [
+          {
+            badge: "주제 트렌드 (Topics)",
+            title: "단일 재해를 넘어 '폭염-홍수 복합재난'과 '수관(Canopy) 미기후 냉각'에 집중",
+            desc: "건축물의 패시브 냉방, 가로수 수관의 3차원 배치, 도시 유역의 투수성 그린 인프라를 개별 요소가 아닌 하나의 '도시 기후 방어선'으로 통합 평가하는 연구가 주류를 이루었습니다."
+          },
+          {
+            badge: "방법론 트렌드 (Methodologies)",
+            title: "물리 기반 시뮬레이션 + GeoAI 대리모델(Surrogate) 하이브리드화",
+            desc: "ENVI-met·EnergyPlus·수문모델의 연산 한계를 보완하기 위해 드론 LiDAR/열화상 실측 데이터와 GNN·Transformer 모델을 결합해 도시 전체를 1m 해상도로 실시간 예측하는 기법이 확산 중입니다."
+          },
+          {
+            badge: "핵심 이슈 (Key Issues)",
+            title: "기후 적응 인프라의 공간적 형평성(Equity)과 전과정 탄소(LCA) 트레이드오프",
+            desc: "녹지 확충과 고성능 건축 리모델링이 취약계층 거주지에서 소외되는 현상을 실증하고, 운영 탄소 절감과 자재 내재 탄소 간의 균형점을 찾는 정책적 제언이 부각되었습니다."
+          }
+        ],
+        papers: [
+          {
+            id: "w44-01",
+            domain: "건축",
+            journal: "Building and Environment",
+            pubDate: "2026-10-31",
+            title: "Coupling 3D tree canopy radiative transfer with building energy simulation for neighborhood-scale cooling demand assessment",
+            titleKo: "근린 스케일 냉방 부하 평가를 위한 3차원 수관 복사전달 모델과 건물 에너지 시뮬레이션의 결합",
+            authors: "Lin, Y., Chen, H., & Santamouris, M.",
+            doi: "https://doi.org/10.1016/j.buildenv.2026.112301",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 98,
+            topic: "도시 가로수 및 조경 수목의 3차원 수관(Canopy) 차양·증산 냉각 효과가 인접 건축물의 여름철 냉방 에너지 소비와 실내 열쾌적성에 미치는 영향을 정량화",
+            methodology: "드론 LiDAR 포인트 클라우드로 복원한 3D 복셀(Voxel) 수관 복사 모델과 EnergyPlus를 양방향 동적 커플링(Co-simulation)하여 15개 도시 블록을 모의",
+            issue: "건물 남·서측의 다층 수관 배치가 냉방 피크 전력을 최대 18.4% 절감함을 입증했으나, 야간 장파복사 차폐로 인해 풍속이 낮은 협소 가로에서는 야간 냉각이 지연되는 역효과 이슈를 규명",
+            keywords: ["Urban Heat Island (도시열섬)", "Building Energy & Embodied Carbon", "ENVI-met & LiDAR Canopy"],
+            abstract: "Existing building energy models typically overlook the complex 3D radiative and evapotranspiration interactions of surrounding street trees. Here we couple a voxelized LiDAR tree canopy radiative model with EnergyPlus across 15 high-density urban blocks..."
+          },
+          {
+            id: "w44-02",
+            domain: "건축",
+            journal: "Energy and Buildings",
+            pubDate: "2026-10-30",
+            title: "Whole-life carbon trade-offs between operational HVAC electrification and embodied carbon in deep retrofits of aging public housing",
+            titleKo: "노후 공공임대주택 그린리모델링에서 설비 전동화 운영탄소 절감과 자재 내재탄소 간의 전과정 탄소 트레이드오프 분석",
+            authors: "Park, S., Kim, J., & Lützkendorf, T.",
+            doi: "https://doi.org/10.1016/j.enbuild.2026.114892",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 94,
+            topic: "노후 공동주택 그린리모델링 시 고단열 외피 보강 및 히트펌프 도입에 따른 30년 주기 운영탄소(Operational Carbon) 감축량과 투입 자재의 내재탄소(Embodied Carbon) 비교",
+            methodology: "국내외 42개 노후 공공주택 단지를 대상으로 동적 에너지 시뮬레이션과 전과정평가(LCA, EN 15978) 및 전력망 탈탄소화 시나리오(2026~2050) 몬테카를로 분석 수행",
+            issue: "과도한 삼중유리·외단열 교체는 자재 내재탄소 회수 기간을 19년 이상으로 늘리므로, 중위도 기후대에서는 적정 단열 + 고효율 히트펌프 조합이 탄소중립 달성 시점을 7년 앞당긴다는 정책 기준 제시",
+            keywords: ["Building Energy & Embodied Carbon", "Green Retrofit", "Life Cycle Assessment"],
+            abstract: "Deep energy retrofits often prioritize maximum thermal insulation without accounting for upfront embodied carbon spikes..."
+          },
+          {
+            id: "w44-03",
+            domain: "건축",
+            journal: "Automation in Construction",
+            pubDate: "2026-10-29",
+            title: "Automated post-earthquake structural facade crack and spalling assessment using UAV thermal-RGB fusion and segment anything models",
+            titleKo: "드론 열화상-RGB 영상 융합과 비전 파운데이션 모델을 활용한 지진 후 건축물 외벽 균열·박리 자동 진단",
+            authors: "Zhang, W., Morales, R., & Akinci, B.",
+            doi: "https://doi.org/10.1016/j.autcon.2026.105712",
+            methodType: "AI/머신러닝",
+            impactScore: 91,
+            topic: "재난 직후 중층·고층 건축물 외피의 구조적 균열과 마감재 박리 위험 부위를 비접촉식으로 신속 진단하는 자동화 파이프라인 개발",
+            methodology: "UAV로 촬영한 열화상(TIR)과 고해상도 RGB 영상을 정합한 뒤, 도메인 미세조정된 Vision Foundation Model(SAM-2 기반)과 BIM IFC 부재 객체를 매핑",
+            issue: "육안으로 식별되지 않는 내부 박리(Delamination)를 열관성 차이로 92.6% 검출하여, 지진 직후 2차 낙하물 인명피해 예방 및 긴급 안전진단 소요 시간을 80% 단축",
+            keywords: ["GeoAI & Graph Neural Network", "BIM Digital Twin", "Post-Disaster Inspection"],
+            abstract: "Rapid structural inspection after seismic events is hindered by hidden subsurface delamination on building facades..."
+          },
+          {
+            id: "w44-04",
+            domain: "건축",
+            journal: "Architectural Science Review",
+            pubDate: "2026-10-28",
+            title: "Adaptive solar shading and natural ventilation strategies for passive survivability during multi-day power outages in heatwaves",
+            titleKo: "폭염기 장기 정전 사태 시 실내 생존성(Passive Survivability) 확보를 위한 적응형 차양 및 자연환기 설계 전략",
+            authors: "O'Brien, L., & Rajapaksha, I.",
+            doi: "https://doi.org/10.1080/00038628.2026.241109",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 89,
+            topic: "극한 폭염과 전력망 정전이 동시에 발생할 때 냉방 설비 없이 실내 온열지수(SET*, WBGT)를 생존 임계치 이하로 유지하는 건축 패시브 디자인 요건 도출",
+            methodology: "미래 극한기상 데이터(2050년 100년 빈도 폭염) 하에서 아파트 평면 유형별 창호 개폐율, 외부 가동형 루버, 축열체 두께에 따른 실내 열 축적 시뮬레이션",
+            issue: "전면 유리 커튼월 공동주택은 정전 14시간 만에 고령자 열사병 위험 온도(WBGT 31°C)를 초과하며, 외부 차양과 맞통풍 환기구 확보가 건축법상 의무화되어야 함을 경고",
+            keywords: ["Urban Heat Island (도시열섬)", "Compound Flood-Heat Risk (복합재난)", "Passive Survivability"],
+            abstract: "When grid blackouts coincide with severe heatwaves, buildings become primary exposure environments..."
+          },
+          {
+            id: "w44-05",
+            domain: "도시",
+            journal: "Cities",
+            pubDate: "2026-10-31",
+            title: "Who benefits from the 15-minute city under extreme heat? Measuring shade-adjusted pedestrian accessibility across socioeconomic strata",
+            titleKo: "극한 폭염 속에서 15분 도시는 누구에게 혜택을 주는가? 사회경제적 계층별 '그늘 보정 보행 접근성' 측정",
+            authors: "Moreno, C., Lee, D., & Guzmán, L.",
+            doi: "https://doi.org/10.1016/j.cities.2026.105408",
+            methodType: "원격탐사/GIS",
+            impactScore: 97,
+            topic: "기존 15분 도시 연구가 물리적 거리만 계산하던 한계를 넘어, 여름철 한낮 보행로의 일사 노출과 그늘 연속성을 반영한 '열스트레스 보정 접근성' 평가",
+            methodology: "유럽 및 동아시아 8개 대도시의 가로망 네트워크에 시간대별 태양 고도·건물/수목 그림자 지수(Shade Index)와 고령자 보행속도 저하 계수를 결합한 GIS 네트워크 분석",
+            issue: "평상시에는 15분 생활권으로 분류되던 저소득 주거지의 38%가 폭염 시 그늘 부족으로 인해 고령자의 필수 의료·식료품 접근성이 사실상 붕괴되는 '열 접근성 격차' 확인",
+            keywords: ["15-Minute City Resilience", "Thermal Inequity (열 불평등)", "Urban Heat Island (도시열섬)"],
+            abstract: "Standard 15-minute city metrics assume season-invariant walking impedance..."
+          },
+          {
+            id: "w44-06",
+            domain: "도시",
+            journal: "Urban Studies",
+            pubDate: "2026-10-29",
+            title: "Climate resilience zoning or green displacement? Empirical evidence from urban floodplain buyout and park conversion programs",
+            titleKo: "기후 회복탄력성 용도지역제인가 녹색 축출인가? 도시 상습침수구역 매입 및 수변공원 전환 사업의 실증 분석",
+            authors: "Anguelovski, I., & Shi, L.",
+            doi: "https://doi.org/10.1177/0042098026128940",
+            methodType: "실증/현장계측",
+            impactScore: 92,
+            topic: "도시 침수 위험 해소를 위한 상습침수지 매입 후 생태공원 조성 사업이 주변 임대료 상승과 세입자 비자발적 이주에 미치는 장기 영향 분석",
+            methodology: "최근 10년간 수변 복원 및 재해예방형 공원 사업이 시행된 19개 도시 권역의 패널 주택 실거래가·임대료 데이터에 이중차분법(Staggered DID) 적용",
+            issue: "재해 위험은 감소했으나 인접 반경 500m 내 임대료가 평균 14.2% 상승하여 원거주 세입자가 외곽의 또 다른 재해취약지역으로 밀려나는 풍선효과 발생; 공공임대 결합 의무화 제안",
+            keywords: ["Nature-based Solutions (자연기반해법)", "Thermal Inequity (열 불평등)", "Green Gentrification"],
+            abstract: "Managed retreat and floodplain-to-park conversions are widely promoted as nature-based climate adaptation..."
+          },
+          {
+            id: "w44-07",
+            domain: "도시",
+            journal: "Sustainable Cities and Society",
+            pubDate: "2026-11-01",
+            title: "City-scale urban microclimate digital twin using Physics-Informed Graph Neural Networks and IoT street sensor networks",
+            titleKo: "물리 법칙 내재화 그래프 신경망(PI-GNN)과 도시 IoT 센서망을 결합한 도시 스케일 미기후 디지털 트윈",
+            authors: "Wang, Z., Cho, Y., & Middel, A.",
+            doi: "https://doi.org/10.1016/j.scs.2026.105911",
+            methodType: "AI/머신러닝",
+            impactScore: 99,
+            topic: "대도시 전역의 가로별 기온·습도·복사온도(MRT)를 10분 단위로 실시간 추정하고 도시계획 시나리오를 즉시 시뮬레이션하는 미기후 디지털 트윈 구축",
+            methodology: "도시 내 1,200개 IoT 기상센서 시계열 데이터와 3D 도시 형태(SVF, 건축물 높이, 표면 알베도)를 결합한 Physics-Informed Spatio-Temporal GNN 모델 학습",
+            issue: "기존 전산유체역학(CFD) 대비 연산 속도를 4,500배 단축하면서도 오차(RMSE)를 0.62°C 이내로 억제하여, 폭염 특보 시 살수차 투입 및 쿨링포그 가동 우선순위를 실시간 의사결정 지원",
+            keywords: ["GeoAI & Graph Neural Network", "Urban Heat Island (도시열섬)", "Digital Twin"],
+            abstract: "High-resolution urban microclimate modeling at the city scale has long faced a bottleneck between computational speed and physical fidelity..."
+          },
+          {
+            id: "w44-08",
+            domain: "도시",
+            journal: "Computers, Environment and Urban Systems",
+            pubDate: "2026-10-30",
+            title: "Evaluating visual and thermal walkability from multi-temporal street view imagery using multimodal large language models",
+            titleKo: "멀티모달 거대언어모델(MLLM)과 다중시기 거리뷰 영상을 활용한 시각적·열환경적 보행친화도 자동 평가",
+            authors: "Ito, K., & Biljecki, F.",
+            doi: "https://doi.org/10.1016/j.compenvurbsys.2026.102184",
+            methodType: "AI/머신러닝",
+            impactScore: 95,
+            topic: "계절별 거리뷰(Street View) 영상과 보행자 체감 설문을 결합하여 도시 가로의 녹시율, 차양 연속성, 보행 방해물을 자동 채점하는 공간 AI 프레임워크",
+            methodology: "계절별 파노라마 거리뷰 18만 장에 Vision-Language Model 프롬프트 엔지니어링과 공간 회귀모델을 적용해 미시적 보행 환경 품질 지수 산출",
+            issue: "위성영상 기반 NDVI 녹지 지수만으로는 가로수 아래 실제 보행자의 그늘 체감도를 설명하기 어려우며(R²=0.31), 보행자 눈높이 거리뷰 기반 수관 차폐율이 열쾌적성과 높은 상관성(R²=0.78)을 보임",
+            keywords: ["GeoAI & Graph Neural Network", "15-Minute City Resilience", "Street View AI"],
+            abstract: "Top-down remote sensing indices often fail to capture pedestrian-level micro-environmental quality..."
+          },
+          {
+            id: "w44-09",
+            domain: "조경",
+            journal: "Landscape and Urban Planning",
+            pubDate: "2026-10-31",
+            title: "Optimizing spatial configuration of blue-green infrastructure for dual mitigation of pluvial flooding and extreme urban heat",
+            titleKo: "도시 내수침수와 극한 폭염의 동시 저감을 위한 블루-그린 인프라(BGI) 공간 배치 최적화",
+            authors: "Haase, D., Kim, M., & Fletcher, T. D.",
+            doi: "https://doi.org/10.1016/j.landurbplan.2026.105231",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 99,
+            topic: "한정된 도시 가용 토지 내에서 침수 저감용 저류형 녹지(생태저류지, 빗물정원)와 폭염 저감용 수관 녹지를 어떻게 배치해야 복합 효과를 극대화하는지 규명",
+            methodology: "도시 유역 수문모델(SWMM)과 미기후 열수지 모델을 다목적 유전 알고리즘(NSGA-III)에 연동하여 500개 공간 배치 파레토 최적해 도출",
+            issue: "침수 저감에만 맞춘 저지대 집중형 배치는 고밀 주거지의 열섬 완화 효과가 낮으므로, 소규모 분산형 침투수목대(Tree Trench)와 하류 다기능 저류공원을 연계할 때 복합 편익이 34% 증가",
+            keywords: ["Nature-based Solutions (자연기반해법)", "Compound Flood-Heat Risk (복합재난)", "Urban Heat Island (도시열섬)"],
+            abstract: "Blue-green infrastructure (BGI) is rarely optimized simultaneously for both hydrological peak attenuation and microclimatic cooling..."
+          },
+          {
+            id: "w44-10",
+            domain: "조경",
+            journal: "Urban Forestry & Urban Greening",
+            pubDate: "2026-10-30",
+            title: "Drought-heatwave compound stress alters transpiration cooling efficiency across 28 temperate urban street tree species",
+            titleKo: "가뭄-폭염 복합 스트레스가 온대 도시 가로수 28종의 증산 냉각 효율에 미치는 영향 실증",
+            authors: "Rahman, M. A., & Moser-Reischl, A.",
+            doi: "https://doi.org/10.1016/j.ufug.2026.128604",
+            methodType: "실증/현장계측",
+            impactScore: 93,
+            topic: "장기 가뭄이 동반된 폭염 시 도시 가로수가 기공을 닫아 증산 냉각 기능이 급격히 저하되는 현상을 수종별로 정량 계측",
+            methodology: "2년간 도시 가로수 28종(총 420주)에 수액류 센서(Sap flow), 잎 수분포텐셜, 하부 미기상 계측기를 부착하여 가뭄-폭염 기간의 잠열 냉각량 변화 추적",
+            issue: "수분 스트레스에 민감한 천근성 수종은 폭염 절정기에 증산 냉각 효과가 평시의 22% 수준으로 급감하므로, 투수성 포장 확대 및 내건성 수종 혼식 가이드라인 개정 필요",
+            keywords: ["ENVI-met & LiDAR Canopy", "Nature-based Solutions (자연기반해법)", "Urban Heat Island (도시열섬)"],
+            abstract: "Transpiration cooling by urban trees is often assumed constant during summer heatwaves, yet soil moisture deficits trigger stomatal closure..."
+          },
+          {
+            id: "w44-11",
+            domain: "조경",
+            journal: "Landscape Ecology",
+            pubDate: "2026-10-28",
+            title: "3D landscape connectivity of urban green corridors for avian and pollinator thermal refugia under warming scenarios",
+            titleKo: "기후 온난화 시나리오 하에서 도시 생물종의 열 피난처(Thermal Refugia) 기능을 위한 3차원 생태축 연결성 분석",
+            authors: "Zeller, K., & Song, Y.",
+            doi: "https://doi.org/10.1007/s10980-026-02014-8",
+            methodType: "원격탐사/GIS",
+            impactScore: 88,
+            topic: "도시 내 조류 및 수분매개 곤충이 폭염기를 피해 이동할 수 있는 미기후 열 피난처와 3차원 식생 층위 연결성 평가",
+            methodology: "항공 LiDAR 식생 구조 데이터와 Landsat/ECOSTRESS 지표면온도(LST)를 결합한 서킷 이론(Circuitscape) 저항면 모델링",
+            issue: "단순 평면적 잔디 녹지 연결은 폭염기 생물 이동 통로로 기능하지 못하며, 수관고 8m 이상의 다층 구조 징검다리 녹지가 열 저항을 60% 이상 낮춤을 규명",
+            keywords: ["ENVI-met & LiDAR Canopy", "Nature-based Solutions (자연기반해법)", "Ecological Connectivity"],
+            abstract: "Two-dimensional land cover maps inadequately represent thermal barriers for urban wildlife during extreme heat events..."
+          },
+          {
+            id: "w44-12",
+            domain: "조경",
+            journal: "Journal of Environmental Management",
+            pubDate: "2026-10-29",
+            title: "Long-term soil organic carbon sequestration and heavy metal immobilization in biochar-amended urban bioretention cells",
+            titleKo: "바이오차(Biochar)를 혼합한 도시 생태저류지의 장기 토양 유기탄소 격리 및 도로 비점오염 중금속 고정 효과",
+            authors: "Vijayaraghavan, K., & Ryu, H.",
+            doi: "https://doi.org/10.1016/j.jenvman.2026.123105",
+            methodType: "실증/현장계측",
+            impactScore: 90,
+            topic: "도시 도로변 빗물정원 및 생태저류지 토양에 목질계 바이오차를 혼합할 때 탄소 저장 능력과 강우 유출수 수질 정화 성능의 장기 지속성 검증",
+            methodology: "5년간 운영된 현장 실증 생태저류지 24개소의 토양 코어 샘플링, 동위원소 탄소 분획 분석 및 강우 시 유출수 수질 모니터링",
+            issue: "부피 기준 8% 바이오차 혼합이 토양 투수성을 유지하면서도 일반 식재토 대비 탄소 격리량을 2.4배 높이고 아연·구리 유출을 85% 이상 차단함을 실증",
+            keywords: ["Nature-based Solutions (자연기반해법)", "Building Energy & Embodied Carbon", "Stormwater Management"],
+            abstract: "Urban bioretention systems provide stormwater control, yet their potential as durable urban carbon sinks remains under-quantified..."
+          },
+          {
+            id: "w44-13",
+            domain: "기후변화",
+            journal: "Nature Climate Change",
+            pubDate: "2026-10-30",
+            title: "Disproportionate escalation of humid heat extremes in rapidly urbanizing coastal megacities under 2.0°C warming",
+            titleKo: "2.0°C 온난화 시 급격히 도시화되는 해안 메가시티에서 습윤 폭염(Humid Heat) 극한치의 비선형적 급증",
+            authors: "Raymond, C., Zhou, L., & Horton, R. M.",
+            doi: "https://doi.org/10.1038/s41558-026-02198-4",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 100,
+            topic: "기온 상승과 해풍 수증기 유입, 도시 열섬 효과가 중첩되는 해안 대도시에서 인체 체온 조절 한계를 위협하는 습구온도(Wet-Bulb Temperature) 급증 메커니즘 규명",
+            methodology: "도시 캐노피 모델이 결합된 대류허용 해상도(2km) 지역기후모델(CP-RCM) 앙상블을 전 세계 35개 해안 대도시권에 적용",
+            issue: "건조 기온 기준 폭염 대책만으로는 해안 도시의 야간 고습도 열스트레스 사망 위험을 과소평가하며, 도시 바람길 확보와 제습 냉방 인프라 확충이 시급함을 경고",
+            keywords: ["Urban Heat Island (도시열섬)", "Compound Flood-Heat Risk (복합재난)", "Humid Heatwave"],
+            abstract: "Coastal megacities experience unique thermodynamic interactions between urban heat islands and marine moisture advection..."
+          },
+          {
+            id: "w44-14",
+            domain: "기후변화",
+            journal: "Global Environmental Change",
+            pubDate: "2026-10-29",
+            title: "Maladaptation traps in urban infrastructure lock-in: A global synthesis of hard versus hybrid coastal and riverine defenses",
+            titleKo: "도시 인프라 고착화로 인한 오적응(Maladaptation) 함정: 강성 방재 구조물과 하이브리드 생태 방재의 전 세계 비교 종합",
+            authors: "Sovacool, B. K., & Eriksen, S.",
+            doi: "https://doi.org/10.1016/j.gloenvcha.2026.102944",
+            methodType: "실증/현장계측",
+            impactScore: 95,
+            topic: "제방·방조제 위주의 회색 인프라(Grey Infrastructure) 단독 투자가 장기적으로 배후 도시의 개발 밀도를 높여 파국적 침수 위험을 키우는 '제방 효과(Levee Effect)' 분석",
+            methodology: "전 세계 68개 해안·하천 도시의 최근 30년 치 치수 투자 내역, 토지이용 변화, 재해 피해액을 메타분석 및 동적 적응 경로(Dynamic Adaptation Pathways)로 평가",
+            issue: "단기 방어에 치중한 콘크리트 제방 증축보다 배후 유수지·습지 버퍼를 결합한 하이브리드 방재가 2050년 이후 기대피해액(EAD)을 41% 낮춘다는 근거 제시",
+            keywords: ["Nature-based Solutions (자연기반해법)", "Compound Flood-Heat Risk (복합재난)", "Adaptation Pathways"],
+            abstract: "Hard engineering defenses frequently induce a false sense of security that accelerates floodplain urbanization..."
+          },
+          {
+            id: "w44-15",
+            domain: "기후변화",
+            journal: "Climatic Change",
+            pubDate: "2026-10-27",
+            title: "Updating urban intensity-duration-frequency (IDF) rainfall curves for sub-hourly convective storms using convection-permitting ensembles",
+            titleKo: "대류허용 기후모델 앙상블을 활용한 도시 단시간(Sub-hourly) 극한 호우의 확률강우량도(IDF 곡선) 갱신",
+            authors: "Fowler, H. J., & Prein, A. F.",
+            doi: "https://doi.org/10.1007/s10584-026-03812-1",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 91,
+            topic: "도시 우수관거 설계의 기준이 되는 15분~1시간 지속시간 극한 강우 강도가 기후변화로 인해 기존 일 단위 통계 추정치보다 훨씬 가파르게 증가함을 입증",
+            methodology: "비정상성 극치통계(Non-stationary GEV) 모델과 고해상도 대류허용 기후 시뮬레이션을 결합하여 도시 유역별 미래 IDF 곡선 산출",
+            issue: "현행 과거 관측치 기반 50년 빈도 우수관거 설계 기준이 2040년대에는 12~15년 빈도 수준으로 격하되므로, 도시 배수 설계 기준의 비정상성 할증 계수 도입 촉구",
+            keywords: ["Compound Flood-Heat Risk (복합재난)", "Urban Drainage IDF", "Climate Downscaling"],
+            abstract: "Urban drainage systems are particularly sensitive to sub-hourly rainfall extremes that coarse GCMs fail to resolve..."
+          },
+          {
+            id: "w44-16",
+            domain: "기후변화",
+            journal: "Environmental Research Letters",
+            pubDate: "2026-10-31",
+            title: "High-resolution mapping of neighborhood consumption-based and building operational carbon footprints across 50 Asian cities",
+            titleKo: "아시아 50개 도시의 행정동 단위 소비 기반 탄소발자국 및 건물 운영 탄소배출 고해상도 매핑",
+            authors: "Moran, D., &Shan, Y.",
+            doi: "https://doi.org/10.1088/1748-9326/ad8c12",
+            methodType: "원격탐사/GIS",
+            impactScore: 90,
+            topic: "도시 내부의 건물 형태, 소득 수준, 교통 접근성에 따라 탄소 배출 책임이 공간적으로 어떻게 편중되어 있는지 250m 격자 단위로 규명",
+            methodology: "야간조도·건축물 3D 체적 위성 데이터, 가계소비 마이크로데이터, 스마트미터 전력 사용량을 결합한 공간 다운스케일링 모델",
+            issue: "상위 10% 고소득 도심 구역이 건물 냉난방 및 소비 탄소의 36%를 배출하는 반면, 도시 열섬 및 대기오염 노출은 외곽 노후 주거지에 집중되는 이중 불평등 확인",
+            keywords: ["Building Energy & Embodied Carbon", "Thermal Inequity (열 불평등)", "Urban Carbon Mapping"],
+            abstract: "City-wide carbon inventories mask stark intra-urban disparities in both emissions responsibility and climate exposure..."
+          },
+          {
+            id: "w44-17",
+            domain: "재난재해",
+            journal: "International Journal of Disaster Risk Reduction (IJDRR)",
+            pubDate: "2026-11-01",
+            title: "Hyper-local flash flood early warning and underground space evacuation routing using CCTV water-level vision and agent-based modeling",
+            titleKo: "CCTV 수위 비전 AI와 에이전트 기반 시뮬레이션을 결합한 동네 단위 돌발홍수 조기경보 및 지하공간 대피 경로 최적화",
+            authors: "Choi, B., Nakamura, H., & Kreibich, H.",
+            doi: "https://doi.org/10.1016/j.ijdrr.2026.104988",
+            methodType: "AI/머신러닝",
+            impactScore: 98,
+            topic: "극한 호우 시 반지하 주택, 지하상가, 지하철 역사 등 도시 지하공간 침수를 실시간 감지하고 보행약자 맞춤형 대피 시점을 산정하는 시스템",
+            methodology: "거리 방범·교통 CCTV 영상에서 노면 침수심을 실시간 추정하는 Computer Vision 모델과 계단 유입수 수리학·보행 에이전트(ABM) 시뮬레이션 결합",
+            issue: "노면 수심이 15cm를 넘는 순간 지하 계단 유속으로 인해 고령자·어린이의 자력 탈출 불가능 시점이 평균 8분 이내에 도래하므로, 수심 10cm 도달 전 선제적 대피 경보 발령 기준 제시",
+            keywords: ["Compound Flood-Heat Risk (복합재난)", "GeoAI & Graph Neural Network", "Underground Evacuation"],
+            abstract: "Inundation of urban underground spaces poses severe life safety risks during flash floods due to rapid stair-flow velocities..."
+          },
+          {
+            id: "w44-18",
+            domain: "재난재해",
+            journal: "Natural Hazards",
+            pubDate: "2026-10-30",
+            title: "Cascading hazard assessment of post-wildfire debris flows impacting wildland-urban interface (WUI) settlements under extreme rainfall",
+            titleKo: "산불 피해지 극한 호우 시 산림-도시 경계지역(WUI) 주거지를 위협하는 연쇄 토석류 재해 위험도 평가",
+            authors: "Staley, D. M., & Gartner, J. E.",
+            doi: "https://doi.org/10.1007/s11069-026-06941-2",
+            methodType: "원격탐사/GIS",
+            impactScore: 91,
+            topic: "봄철 대형 산불로 식생과 토양 투수성이 파괴된 사면에 여름철 집중호우가 내릴 때 발생하는 연쇄 토석류의 확산 범위 및 건축물 충격압 예측",
+            methodology: "Sentinel-2 산불 피해 심각도(dNBR) 위성지수와 1m DEM 지형 데이터, 2차원 비뉴턴 유체 토석류 수치모델(RAMMS) 통합 모의",
+            issue: "산불 후 2년 이내에는 평시 대비 40% 낮은 강우 강도(시간당 18mm)에서도 대규모 토석류가 발생하여 산림 인접 전원주택·요양시설을 타격하므로 WUI 건축선 후퇴 및 사방댐 긴급 배치 필요",
+            keywords: ["Compound Flood-Heat Risk (복합재난)", "Cascading Hazards", "Wildland-Urban Interface"],
+            abstract: "Wildfires drastically reduce soil infiltration capacity, creating a multi-year window of heightened debris-flow susceptibility..."
+          },
+          {
+            id: "w44-19",
+            domain: "재난재해",
+            journal: "Risk Analysis",
+            pubDate: "2026-10-29",
+            title: "Probabilistic stress-testing of interdependent urban power, water, and healthcare networks under compound heatwave-typhoon scenarios",
+            titleKo: "폭염-태풍 연쇄 복합재난 시나리오 하에서 상호의존적 도시 전력·상수도·응급의료 네트워크의 확률론적 스트레스 테스트",
+            authors: "Zio, E., & Ouyang, M.",
+            doi: "https://doi.org/10.1111/risa.14390",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 94,
+            topic: "태풍으로 인한 배전망 파손 직후 폭염이 이어지는 연쇄 재난 시, 전력 중단이 상수도 펌프 및 병원 응급실 냉방·의료기기 가동에 미치는 도미노 마비 분석",
+            methodology: "도시 기반시설 다중 계층 네트워크(Multi-layer Interdependent Network) 모델과 베이지안 고장 전파 시뮬레이션 수행",
+            issue: "단일 시설 복구보다 지역 거점 병원과 가압장을 연결하는 마이크로그리드(태양광+ESS) 분산 배치가 재난 시 초과 사망 위험을 62% 낮춘다는 투자 우선순위 도출",
+            keywords: ["Compound Flood-Heat Risk (복합재난)", "15-Minute City Resilience", "Infrastructure Interdependency"],
+            abstract: "Compound typhoon-heatwave events expose hidden vulnerabilities across coupled urban lifeline networks..."
+          },
+          {
+            id: "w44-20",
+            domain: "재난재해",
+            journal: "Disasters",
+            pubDate: "2026-10-28",
+            title: "Community-based cooling centers as social infrastructure: Barriers to utilization among isolated older adults during nocturnal heatwaves",
+            titleKo: "사회적 인프라로서의 지역 무더위쉼터: 열대야 기간 독거 고령층의 이용 장벽과 공간·운영 개선 방안",
+            authors: "klinenberg, E., & Kim, S. H.",
+            doi: "https://doi.org/10.1111/disa.12655",
+            methodType: "실증/현장계측",
+            impactScore: 92,
+            topic: "지자체가 지정한 무더위쉼터가 숫적으로는 충분함에도 불구하고 정작 열대야에 가장 취약한 독거 노인들의 실제 이용률이 저조한 원인을 실증 조사",
+            methodology: "폭염 특보 기간 도시 12개 구의 무더위쉼터 180개소 운영 실태 전수조사, GPS 이동 궤적 분석 및 고령자 640명 심층 인터뷰",
+            issue: "주간(09~18시)에만 개방되는 관공서·경로당 중심 운영과 보행 접근로 그늘 부족, 심리적 낙인감이 주요 장벽으로 나타남; 야간 개방형 생활밀착 쉼터 전환 및 방문 돌봄 연계 제안",
+            keywords: ["Thermal Inequity (열 불평등)", "15-Minute City Resilience", "Urban Heat Island (도시열섬)"],
+            abstract: "Despite the proliferation of designated municipal cooling centers, utilization rates among high-risk older adults remain critically low..."
+          }
+        ]
+      },
+
+      "2026-W43": {
+        weekLabel: "2026년 10월 4주차 (10.19 ~ 10.25)",
+        publishDate: "2026년 10월 25일 (일) 19:00 KST",
+        headline: "순환경제형 목구조 건축과 도시 바람길 숲의 미세먼지·열섬 동시 저감, InSAR 위성 기반 도시 지반침하 감시",
+        narrative: "10월 4주차 논문들은 건축 부문의 탄소중립을 위한 대단면 목구조(Mass Timber) 및 순환 골재 활용 연구, 조경·도시 부문의 도시 바람길 숲이 열섬 완화와 대기오염 확산에 미치는 이중 효과, 그리고 기후변화로 인한 지하수 고갈·극한 호우가 유발하는 도시 지반침하 및 인프라 리스크를 집중 조명했습니다.",
+        topKeywords: [
+          { word: "Mass Timber & Circular Construction", count: 11 },
+          { word: "Urban Ventilation Corridor (바람길)", count: 10 },
+          { word: "InSAR Subsidence Monitoring", count: 8 },
+          { word: "Urban Heat Island (도시열섬)", count: 8 },
+          { word: "Nature-based Solutions (자연기반해법)", count: 7 },
+          { word: "GeoAI & Graph Neural Network", count: 6 },
+          { word: "Wildfire Smoke & Indoor Air", count: 5 },
+          { word: "Coastal Sponge City", count: 5 }
+        ],
+        pillars: [
+          {
+            badge: "주제 트렌드 (Topics)",
+            title: "순환형 건축자재(Mass Timber)와 도시 바람길·스폰지시티의 결합",
+            desc: "건축물 자체를 탄소 저장고로 만드는 목구조·재활용 자재 연구와 도시 외곽 산림의 찬 공기를 도심으로 유도하는 바람길 조경 계획이 활발히 다뤄졌습니다."
+          },
+          {
+            badge: "방법론 트렌드 (Methodologies)",
+            title: "InSAR 위성 간섭계와 CFD 대와류모사(LES)의 정밀 결합",
+            desc: "밀리미터 단위의 지반·교량 변위를 포착하는 시계열 InSAR 분석과 도시 협곡 내 오염물질 확산을 모의하는 고정밀 LES 시뮬레이션이 주류를 이루었습니다."
+          },
+          {
+            badge: "핵심 이슈 (Key Issues)",
+            title: "산불 연기 도심 유입에 따른 실내 공기질 악화와 해안 도시 지반침하",
+            desc: "기후변화로 잦아진 대형 산불 연기가 수백 km 떨어진 대도시 실내 환경을 위협하는 문제와 해수면 상승·지반침하 중첩 위험이 핵심 이슈로 떠올랐습니다."
+          }
+        ],
+        papers: [
+          {
+            id: "w43-01",
+            domain: "건축",
+            journal: "Building and Environment",
+            pubDate: "2026-10-24",
+            title: "Indoor PM2.5 and VOC infiltration during prolonged wildfire smoke episodes: Performance of residential filtration and airtightness retrofits",
+            titleKo: "장기 산불 연기 유입 시 주거용 건축물의 기밀성 보강 및 공조 필터 성능에 따른 실내 초미세먼지·VOC 차단 효과",
+            authors: "Nazaroff, W. W., & Singer, B. C.",
+            doi: "https://doi.org/10.1016/j.buildenv.2026.112190",
+            methodType: "실증/현장계측",
+            impactScore: 95,
+            topic: "기후변화로 급증한 대형 산불 연기가 도심 주거지로 확산될 때 외피 기밀도와 환기 시스템 운영 방식이 실내 공기질 보호에 미치는 영향 실증",
+            methodology: "산불 영향권 내 85개 가구의 실내외 PM2.5·블랙카본·VOC 연속 계측 및 다중 구역 물질수지 모델링",
+            issue: "노후 주택은 창문을 닫아도 침기(Infiltration)로 인해 실내 PM2.5가 실외의 65%까지 상승하며, 양압 환기 + 활성탄 결합 MERV-13 필터 가동 시 노출을 88% 저감",
+            keywords: ["Wildfire Smoke & Indoor Air", "Building Energy & Embodied Carbon", "Indoor Air Quality"],
+            abstract: "Wildfire smoke events increasingly expose urban populations far from fire perimeters to hazardous indoor air pollutants..."
+          },
+          {
+            id: "w43-02",
+            domain: "도시",
+            journal: "Sustainable Cities and Society",
+            pubDate: "2026-10-23",
+            title: "Designing urban ventilation corridors using morphological aerodynamics and nocturnal katabatic wind modeling",
+            titleKo: "도시 형태 공기역학과 야간 산곡풍(Katabatic Wind) 모델링을 활용한 도시 바람길 숲 네트워크 설계",
+            authors: "Ren, C., Ng, E., & Hang, J.",
+            doi: "https://doi.org/10.1016/j.scs.2026.105802",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 97,
+            topic: "도시 외곽 산림에서 생성되는 야간 냉기류(찬 바람)가 고밀 건축물 군집에 막히지 않고 도심 열섬 핵심부까지 도달하도록 하는 바람길 설계 기준",
+            methodology: "WRF-Urban 중규모 기상모델과 전산유체역학(CFD)을 연동하여 건축물 전면면적지수(FAI)와 하천·가로 녹지축 배열 시나리오 모의",
+            issue: "바람길 주요 경로상의 건축물 차폐율을 0.25 이하로 관리하고 수관 하부 통풍이 확보된 교목 식재를 배치할 때 도심 야간 기온이 최대 2.1°C 하강",
+            keywords: ["Urban Ventilation Corridor (바람길)", "Urban Heat Island (도시열섬)", "Nature-based Solutions (자연기반해법)"],
+            abstract: "Nocturnal drainage flows from peri-urban mountains offer significant passive cooling potential for valley and basin cities..."
+          },
+          {
+            id: "w43-03",
+            domain: "조경",
+            journal: "Landscape and Urban Planning",
+            pubDate: "2026-10-22",
+            title: "Quantifying cultural ecosystem services and mental stress recovery across biodiverse urban pocket parks using wearable biosensors and eye-tracking",
+            titleKo: "웨어러블 생체센서와 아이트래킹을 활용한 생물다양성 도시 쌈지공원의 문화 생태계서비스 및 정신적 스트레스 회복 효과 정량화",
+            authors: "Grahn, P., & Jiang, B.",
+            doi: "https://doi.org/10.1016/j.landurbplan.2026.105190",
+            methodType: "실증/현장계측",
+            impactScore: 91,
+            topic: "도심 내 소규모 유휴공간에 조성된 포켓파크의 식생 층위 다양성과 수경 요소가 보행자의 생리적 스트레스 완화에 미치는 즉각적 효과 측정",
+            methodology: "실험 참가자 180명에게 모바일 뇌파(EEG)·심박변이도(HRV)·시선추적기를 착용시켜 12개 유형의 도심 가로 및 포켓파크 보행 시 생체반응 기록",
+            issue: "단순 잔디 광장보다 초화류·관목·교목이 다층으로 식재된 300㎡ 미만의 소규모 바이오필릭 포켓파크도 5분 체류만으로 코르티솔 및 교감신경 긴장도를 유의미하게 낮춤",
+            keywords: ["Nature-based Solutions (자연기반해법)", "Biophilic Urban Design", "Wearable Biosensing"],
+            abstract: "While large urban parks are well studied, the restorative mechanics of micro-scale biodiverse pocket parks in dense city centers..."
+          },
+          {
+            id: "w43-04",
+            domain: "기후변화",
+            journal: "Nature Climate Change",
+            pubDate: "2026-10-23",
+            title: "Relative sea-level rise amplified by groundwater-driven land subsidence threatens 48 coastal cities before 2050",
+            titleKo: "지하수 고갈로 인한 지반침하가 가속화하는 상대적 해수면 상승: 2050년 이전 48개 해안 도시의 침수 임계점 도달 경고",
+            authors: "Nicholls, R. J., & Shirzaei, M.",
+            doi: "https://doi.org/10.1038/s41558-026-02170-1",
+            methodType: "원격탐사/GIS",
+            impactScore: 99,
+            topic: "기후변화에 의한 절대 해수면 상승보다 도시 지하수 과잉 양수 및 고층 건축 하중에 따른 지반침하 속도가 3~5배 빨라 해안 도시 침수 위험을 앞당기는 현상 분석",
+            methodology: "전 세계 48개 해안 대도시의 Sentinel-1 InSAR 위성 레이더 간섭계 시계열(2015~2026)과 IPCC AR6 해수면 상승 시나리오 중첩 분석",
+            issue: "해수면 상승만 고려한 기존 방재 계획은 침수 면적을 평균 52% 과소추정하며, 지하수 인공함양 및 지반침하 규제가 기후 적응 대책에 필수적으로 통합되어야 함",
+            keywords: ["InSAR Subsidence Monitoring", "Coastal Sponge City", "Compound Flood-Heat Risk (복합재난)"],
+            abstract: "Vertical land motion often outpaces climate-driven eustatic sea-level rise in rapidly growing deltaic cities..."
+          },
+          {
+            id: "w43-05",
+            domain: "재난재해",
+            journal: "International Journal of Disaster Risk Reduction (IJDRR)",
+            pubDate: "2026-10-24",
+            title: "Graph neural network-based real-time seismic damage estimation for urban water distribution pipelines",
+            titleKo: "그래프 신경망(GNN) 기반 도시 상수도 관망의 지진 시 실시간 파손 위치 추정 및 단수 구역 최소화 제어",
+            authors: "Cimellaro, G. P., & Song, J.",
+            doi: "https://doi.org/10.1016/j.ijdrr.2026.104910",
+            methodType: "AI/머신러닝",
+            impactScore: 92,
+            topic: "지진 발생 직후 지하 매설 상수도관의 누수·파손 지점을 수압 센서 데이터만으로 1분 이내에 역추정하고 긴급 제수밸브 차단을 자동화하는 기법",
+            methodology: "상수도 관망 위상 구조를 반영한 Graph Attention Network(GAT)와 지반운동 세기(PGA/PGV) 공간 분포를 결합한 실시간 상태 추정",
+            issue: "지진 후 소방용수 확보가 생명을 좌우하는 상황에서, 밸브 자동 격리를 통해 소화전 단수 구역을 기존 대비 58% 축소",
+            keywords: ["GeoAI & Graph Neural Network", "Lifeline Resilience", "Seismic Risk"],
+            abstract: "Buried water pipelines suffer hidden ruptures during earthquakes, leading to pressure loss that cripples post-earthquake firefighting..."
+          }
+        ]
+      },
+
+      "2026-W42": {
+        weekLabel: "2026년 10월 3주차 (10.12 ~ 10.18)",
+        publishDate: "2026년 10월 18일 (일) 19:00 KST",
+        headline: "태양광 일체형 건축외피(BIPV)의 도시 반사열 평가, 자율주행 시대의 가로 공간 재편과 기후 이주 시뮬레이션",
+        narrative: "10월 3주차에는 건물일체형태양광(BIPV)과 고반사 쿨루프 도입이 인접 도로와 건물의 열수지에 미치는 양면적 영향, 자율주행·마이크로모빌리티 보급으로 남게 되는 주차 공간의 그린 인프라 전환 잠재력, 그리고 장기 기후 재난에 따른 지역 간 인구 이동 모델링이 주요 화두였습니다.",
+        topKeywords: [
+          { word: "BIPV & Cool Roof Albedo", count: 10 },
+          { word: "Parking-to-Green Conversion", count: 9 },
+          { word: "Urban Heat Island (도시열섬)", count: 8 },
+          { word: "Climate Mobility & Migration", count: 7 },
+          { word: "Nature-based Solutions (자연기반해법)", count: 7 },
+          { word: "GeoAI & Graph Neural Network", count: 6 }
+        ],
+        pillars: [
+          {
+            badge: "주제 트렌드 (Topics)",
+            title: "도시 주차 공간의 녹지 전환(Depaving)과 건물 외피 태양광의 미기후 영향",
+            desc: "도심 내 과잉 아스팔트 주차장을 투수성 도시숲과 빗물정원으로 전환할 때 얻는 열섬·홍수 저감 효과를 정량화한 연구가 주목받았습니다."
+          },
+          {
+            badge: "방법론 트렌드 (Methodologies)",
+            title: "위성 열적외선(ECOSTRESS)과 건축물 태양복사 레이트레이싱 결합",
+            desc: "벽면 BIPV와 고반사 도료가 도시 협곡 내에서 일으키는 다중 반사를 GPU 기반 광선추적(Ray-tracing)으로 정밀 계산하는 기법이 제시되었습니다."
+          },
+          {
+            badge: "핵심 이슈 (Key Issues)",
+            title: "고반사 외장재의 보행자 눈부심·열부하 역효과와 적정 알베도 가이드라인",
+            desc: "무분별한 고반사 벽면 적용이 보행자 평균복사온도(MRT)를 오히려 높일 수 있어 옥상과 벽면의 차별화된 반사율 기준이 필요함이 제기되었습니다."
+          }
+        ],
+        papers: [
+          {
+            id: "w42-01",
+            domain: "건축",
+            journal: "Energy and Buildings",
+            pubDate: "2026-10-17",
+            title: "Urban canyon radiative trapping and pedestrian thermal stress induced by retro-reflective versus diffuse high-albedo building facades",
+            titleKo: "건물 입면의 재귀반사(Retro-reflective) 및 확산 고반사 외장재가 도시 협곡 열 갇힘과 보행자 열스트레스에 미치는 영향 비교",
+            authors: "Rossi, F., & Akbari, H.",
+            doi: "https://doi.org/10.1016/j.enbuild.2026.114701",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 94,
+            topic: "건물 냉방 부하를 줄이기 위해 벽면에 적용하는 고반사 도료가 반사광을 보행자 쪽으로 보내 거리 열쾌적성을 악화시키는 문제를 해결하기 위한 재귀반사 소재 검증",
+            methodology: "광선추적(Ray-tracing) 복사 모델과 야외 1:5 축소 모형 도시 협곡 실험을 통해 일반 고반사 벽면과 상향 재귀반사 프리즘 필름의 열수지 비교",
+            issue: "일반 고반사 벽면은 보행자 평균복사온도(MRT)를 최대 4.8°C 상승시키는 반면, 입사광을 하늘 방향으로 되돌리는 재귀반사 외장재는 건물 냉방부하와 보행자 열스트레스를 동시에 저감",
+            keywords: ["BIPV & Cool Roof Albedo", "Urban Heat Island (도시열섬)", "Building Energy & Embodied Carbon"],
+            abstract: "Diffuse high-albedo vertical facades frequently reflect solar radiation downward onto pedestrians in narrow street canyons..."
+          },
+          {
+            id: "w42-02",
+            domain: "도시",
+            journal: "Cities",
+            pubDate: "2026-10-16",
+            title: "Reclaiming asphalt: City-wide potential of converting underutilized surface parking lots into multi-functional sponge pocket parks",
+            titleKo: "아스팔트 되찾기: 도심 저이용 노상·노외 주차장의 다기능 스폰지 포켓파크 전환 잠재력 전수 평가",
+            authors: "Chester, M., & Pincetl, S.",
+            doi: "https://doi.org/10.1016/j.cities.2026.105312",
+            methodType: "원격탐사/GIS",
+            impactScore: 96,
+            topic: "항공영상 AI 객체 탐지로 도심 내 시간대별 주차 점유율이 40% 미만인 과잉 지상 주차장을 식별하고, 이를 투수성 녹지로 전환할 때의 기후 적응 편익 산정",
+            methodology: "고해상도 정사영상 딥러닝 차량 탐지 + 도시 유역 침수·열섬 시뮬레이션 및 토지 매입·조성 비용 편익 분석",
+            issue: "저이용 지상 주차장의 25%만 투수성 수목 녹지로 전환해도 도심 불투수면적을 6.8% 줄이고 여름철 주변 지표면온도를 3.2°C 낮출 수 있음을 실증",
+            keywords: ["Parking-to-Green Conversion", "Nature-based Solutions (자연기반해법)", "Urban Heat Island (도시열섬)"],
+            abstract: "Surface parking lots occupy vast expanses of impervious, low-albedo land in urban cores..."
+          },
+          {
+            id: "w42-03",
+            domain: "재난재해",
+            journal: "Risk Analysis",
+            pubDate: "2026-10-15",
+            title: "Modeling climate-induced household relocation and cascading housing market pressures in flood-prone metropolitan regions",
+            titleKo: "상습 침수 대도시권에서 기후 재난으로 인한 가구 이주 의사결정과 인접 안전지대 주택시장 연쇄 압력 모델링",
+            authors: "Botzen, W. J. W., & Aerts, J. C. J. H.",
+            doi: "https://doi.org/10.1111/risa.14355",
+            methodType: "AI/머신러닝",
+            impactScore: 90,
+            topic: "반복적인 도시 침수와 풍수해보험료 인상이 가구의 이주 결정에 미치는 임계점과 이주 수요가 집중되는 고지대 주거지의 주택 가격 파급효과 분석",
+            methodology: "가구 설문 실험(Stated Choice)과 공간 일반균형 에이전트 기반 모델(Spatial ABM) 결합",
+            issue: "침수 위험 정보 공개와 보험료 차등화가 고소득층의 선제적 이주를 촉진하는 반면, 저소득층은 자산 가치 하락으로 위험 지역에 고립되는 'Trapped Population' 현상 심화",
+            keywords: ["Climate Mobility & Migration", "Compound Flood-Heat Risk (복합재난)", "Thermal Inequity (열 불평등)"],
+            abstract: "Repeated urban flooding increasingly triggers intra-metropolitan residential sorting..."
+          }
+        ]
+      }
+    };
+
+    // ==========================================
+    // 3. APPLICATION STATE & STORAGE
+    // ==========================================
+    let currentState = {
+      weekKey: "2026-W44",
+      activeTab: "overview",
+      domainFilter: "ALL",
+      journalFilter: "ALL",
+      methodFilter: "ALL",
+      searchQuery: "",
+      sortBy: "date-desc",
+      viewMode: "card", // 'card' | 'table'
+      synthesisExpanded: true,
+      bookmarks: {}, // { paperId: { paperObject, note: "" } }
+      simulatedAdded: false
+    };
+
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem("sunday_scholar_bookmarks_v1");
+        if (raw) {
+          currentState.bookmarks = JSON.parse(raw);
+        } else {
+          // Pre-seed 2 bookmarks so user can immediately see how the bookmark & research note feature works
+          const defaultPaper = WEEKLY_DATA["2026-W44"].papers[0];
+          const secondPaper = WEEKLY_DATA["2026-W44"].papers[6];
+          currentState.bookmarks[defaultPaper.id] = {
+            ...defaultPaper,
+            weekKey: "2026-W44",
+            note: "수관 3D LiDAR 복셀과 EnergyPlus 양방향 커플링 방법론을 우리 연구실 세종시 공동주택 단지 열환경 분석에 적용 검토."
+          };
+          currentState.bookmarks[secondPaper.id] = {
+            ...secondPaper,
+            weekKey: "2026-W44",
+            note: "PI-GNN 대리모델로 CFD 연산속도 4,500배 단축한 구조 참고 필요."
+          };
+        }
+      } catch (e) {
+        currentState.bookmarks = {};
+      }
+    }
+
+    function saveBookmarks() {
+      try {
+        localStorage.setItem("sunday_scholar_bookmarks_v1", JSON.stringify(currentState.bookmarks));
+      } catch (e) {
+        // Ignore storage errors in sandboxed iframe
+      }
+      updateBookmarkBadge();
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById("toastContainer");
+      const text = document.getElementById("toastMessage");
+      text.textContent = msg;
+      container.classList.remove("hidden");
+      if (window._toastTimer) clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        container.classList.add("hidden");
+      }, 3200);
+    }
+
+    function copyTextToClipboard(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg);
+        }).catch(() => {
+          fallbackCopy(text, successMsg);
+        });
+      } else {
+        fallbackCopy(text, successMsg);
+      }
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast(successMsg);
+      } catch (e) {
+        showToast("복사에 실패했습니다.");
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Domain Styling Helper
+    function getDomainBadgeStyle(domain) {
+      const map = {
+        "건축": "bg-indigo-50 text-indigo-700 border-indigo-200",
+        "도시": "bg-sky-50 text-sky-700 border-sky-200",
+        "조경": "bg-emerald-50 text-emerald-700 border-emerald-200",
+        "기후변화": "bg-amber-50 text-amber-800 border-amber-200",
+        "재난재해": "bg-rose-50 text-rose-700 border-rose-200"
+      };
+      return map[domain] || "bg-slate-100 text-slate-700 border-slate-200";
+    }
+
+    function getDomainEmoji(domain) {
+      const map = {
+        "건축": "🏛️",
+        "도시": "🌆",
+        "조경": "🌳",
+        "기후변화": "🌍",
+        "재난재해": "🚨"
+      };
+      return map[domain] || "📄";
+    }
+
+    // ==========================================
+    // 4. RENDERING FUNCTIONS
+    // ==========================================
+    function populateJournalDropdown() {
+      const select = document.getElementById("journalFilterSelect");
+      const currentVal = select.value;
+      select.innerHTML = `<option value="ALL">전체 19개 타겟 저널 보기</option>`;
+      const domains = ["건축", "도시", "조경", "기후변화", "재난재해"];
+      domains.forEach(dom => {
+        const group = document.createElement("optgroup");
+        group.label = `${getDomainEmoji(dom)} ${dom} 분야`;
+        TARGET_JOURNALS.filter(j => j.domain === dom || j.secondaryDomain === dom).forEach(j => {
+          const opt = document.createElement("option");
+          opt.value = j.name;
+          opt.textContent = j.name;
+          group.appendChild(opt);
+        });
+        select.appendChild(group);
+      });
+      select.value = currentVal || "ALL";
+    }
+
+    function renderWeeklyOverview() {
+      const weekObj = WEEKLY_DATA[currentState.weekKey];
+      if (!weekObj) return;
+
+      // Top Banner updates
+      document.getElementById("currentWeekBadge").textContent = `발행일: ${weekObj.publishDate}`;
+      document.getElementById("weekHeadline").textContent = `"${weekObj.headline}"`;
+      document.getElementById("bannerTotalCount").textContent = weekObj.papers.length;
+      document.getElementById("statTotalPapers").textContent = `${weekObj.papers.length}편`;
+      document.getElementById("statActiveJournals").textContent = `19개`;
+      document.getElementById("statTopKeyword").textContent = weekObj.topKeywords[0]?.word.split(" (")[0] || "Urban Climate";
+
+      // Pillars
+      const pillarsGrid = document.getElementById("trendPillarsGrid");
+      pillarsGrid.innerHTML = weekObj.pillars.map((p, idx) => {
+        const colors = [
+          "border-l-4 border-l-emerald-500 bg-emerald-50/40",
+          "border-l-4 border-l-sky-500 bg-sky-50/40",
+          "border-l-4 border-l-amber-500 bg-amber-50/40"
+        ];
+        return `
+          <div class="p-4 rounded-xl border border-slate-200 ${colors[idx % 3]} space-y-1.5">
+            <div class="text-xs font-bold text-slate-600 uppercase tracking-wide">${p.badge}</div>
+            <h4 class="text-sm font-bold text-slate-900 leading-snug">${p.title}</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">${p.desc}</p>
+          </div>
+        `;
+      }).join("");
+
+      // Narrative & Keyword Pills
+      document.getElementById("weeklyNarrativeText").textContent = weekObj.narrative;
+      const pillsContainer = document.getElementById("trendingKeywordPills");
+      pillsContainer.innerHTML = weekObj.topKeywords.map(k => {
+        const isSelected = currentState.searchQuery.toLowerCase() === k.word.toLowerCase();
+        return `
+          <button type="button" data-keyword="${k.word}" class="keyword-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition ${
+            isSelected
+              ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+              : "bg-white hover:bg-emerald-50 text-slate-700 border-slate-200"
+          }">
+            <span># ${k.word}</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[11px] ${isSelected ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600"}">${k.count}</span>
+          </button>
+        `;
+      }).join("");
+
+      // Attach Keyword Pill click events
+      document.querySelectorAll(".keyword-pill").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const kw = btn.getAttribute("data-keyword");
+          const searchInput = document.getElementById("searchInput");
+          if (currentState.searchQuery === kw) {
+            currentState.searchQuery = "";
+            searchInput.value = "";
+          } else {
+            currentState.searchQuery = kw;
+            searchInput.value = kw;
+          }
+          updateClearSearchBtn();
+          renderWeeklyOverview();
+        });
+      });
+
+      renderFilteredPapers();
+    }
+
+    function getFilteredPapers() {
+      const weekObj = WEEKLY_DATA[currentState.weekKey];
+      if (!weekObj) return [];
+
+      let list = [...weekObj.papers];
+
+      // Domain filter (handle Landscape and Urban Planning in both 도시 & 조경)
+      if (currentState.domainFilter !== "ALL") {
+        list = list.filter(p => {
+          if (p.domain === currentState.domainFilter) return true;
+          if (p.journal === "Landscape and Urban Planning" && (currentState.domainFilter === "도시" || currentState.domainFilter === "조경")) {
+            return true;
+          }
+          return false;
+        });
+      }
+
+      // Journal filter
+      if (currentState.journalFilter !== "ALL") {
+        list = list.filter(p => p.journal === currentState.journalFilter);
+      }
+
+      // Method filter
+      if (currentState.methodFilter !== "ALL") {
+        list = list.filter(p => p.methodType === currentState.methodFilter);
+      }
+
+      // Search query
+      if (currentState.searchQuery.trim() !== "") {
+        const q = currentState.searchQuery.trim().toLowerCase();
+        list = list.filter(p =>
+          p.title.toLowerCase().includes(q) ||
+          p.titleKo.toLowerCase().includes(q) ||
+          p.journal.toLowerCase().includes(q) ||
+          p.topic.toLowerCase().includes(q) ||
+          p.methodology.toLowerCase().includes(q) ||
+          p.issue.toLowerCase().includes(q) ||
+          p.keywords.some(k => k.toLowerCase().includes(q))
+        );
+      }
+
+      // Sort
+      if (currentState.sortBy === "date-desc") {
+        list.sort((a, b) => b.pubDate.localeCompare(a.pubDate));
+      } else if (currentState.sortBy === "impact-desc") {
+        list.sort((a, b) => b.impactScore - a.impactScore);
+      } else if (currentState.sortBy === "journal-asc") {
+        list.sort((a, b) => a.journal.localeCompare(b.journal));
+      }
+
+      return list;
+    }
+
+    function renderFilteredPapers() {
+      const filtered = getFilteredPapers();
+      document.getElementById("filteredPaperCount").textContent = `${filtered.length}편`;
+
+      const cardGrid = document.getElementById("papersCardGrid");
+      const tableWrapper = document.getElementById("papersTableWrapper");
+      const tableBody = document.getElementById("papersTableBody");
+
+      if (filtered.length === 0) {
+        cardGrid.classList.remove("hidden");
+        tableWrapper.classList.add("hidden");
+        cardGrid.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center space-y-3">
+            <div class="text-3xl">🔍</div>
+            <h4 class="text-base font-bold text-slate-800">조건에 맞는 논문이 없습니다.</h4>
+            <p class="text-xs text-slate-500">검색어나 분야/저널/방법론 필터를 초기화해 보세요.</p>
+            <button type="button" id="btnEmptyReset" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+              필터 전체 초기화
+            </button>
+          </div>
+        `;
+        const emptyReset = document.getElementById("btnEmptyReset");
+        if (emptyReset) {
+          emptyReset.addEventListener("click", resetAllFilters);
+        }
+        return;
+      }
+
+      if (currentState.viewMode === "card") {
+        cardGrid.classList.remove("hidden");
+        tableWrapper.classList.add("hidden");
+
+        cardGrid.innerHTML = filtered.map(p => {
+          const isBookmarked = Boolean(currentState.bookmarks[p.id]);
+          const badgeClass = getDomainBadgeStyle(p.domain);
+          return `
+            <article class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-4">
+              <div class="space-y-3">
+                <!-- Card Top Metadata -->
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="px-2.5 py-0.5 rounded-md text-xs font-bold border ${badgeClass}">
+                      ${getDomainEmoji(p.domain)} ${p.domain}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-800">
+                      ${p.journal}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-teal-50 text-teal-700 border border-teal-200">
+                      ${p.methodType}
+                    </span>
+                  </div>
+                  <button type="button" data-bookmark-id="${p.id}" title="북마크 저장/해제" class="btn-bookmark p-1.5 rounded-lg border transition ${
+                    isBookmarked
+                      ? "bg-amber-50 border-amber-300 text-amber-600"
+                      : "bg-white border-slate-200 text-slate-400 hover:text-slate-600"
+                  }">
+                    <svg class="w-4 h-4" fill="${isBookmarked ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Titles -->
+                <div>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-900 leading-snug hover:text-emerald-700 cursor-pointer btn-open-detail" data-paper-id="${p.id}">
+                    ${p.titleKo}
+                  </h4>
+                  <p class="text-xs text-slate-500 mt-1 font-medium leading-normal">
+                    ${p.title}
+                  </p>
+                  <div class="text-[11px] text-slate-400 mt-1">
+                    저자: ${p.authors} · 출판일: ${p.pubDate}
+                  </div>
+                </div>
+
+                <!-- Structured 3-Part Summary: Topic / Methodology / Issue -->
+                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 space-y-2 text-xs">
+                  <div class="flex items-start gap-2">
+                    <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold shrink-0 mt-0.5">주제</span>
+                    <p class="text-slate-700 leading-relaxed">${p.topic}</p>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-bold shrink-0 mt-0.5">방법론</span>
+                    <p class="text-slate-700 leading-relaxed">${p.methodology}</p>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold shrink-0 mt-0.5">이슈</span>
+                    <p class="text-slate-700 leading-relaxed">${p.issue}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Keywords & Actions -->
+              <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap gap-1">
+                  ${p.keywords.map(kw => `
+                    <span class="px-2 py-0.5 rounded-full text-[11px] bg-slate-100 text-slate-600">#${kw.split(" (")[0]}</span>
+                  `).join("")}
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" data-paper-id="${p.id}" class="btn-open-detail text-xs font-semibold text-emerald-700 hover:text-emerald-800 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition">
+                    초록·연구노트 보기
+                  </button>
+                  <a href="${p.doi}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-slate-600 hover:text-slate-900 px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 transition">
+                    DOI 원문 ↗
+                  </a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+      } else {
+        // Table view
+        cardGrid.classList.add("hidden");
+        tableWrapper.classList.remove("hidden");
+
+        tableBody.innerHTML = filtered.map(p => {
+          const isBookmarked = Boolean(currentState.bookmarks[p.id]);
+          const badgeClass = getDomainBadgeStyle(p.domain);
+          return `
+            <tr class="hover:bg-slate-50/90 transition align-top">
+              <td class="py-3.5 px-4">
+                <span class="inline-block px-2 py-0.5 rounded text-xs font-bold border ${badgeClass} mb-1">
+                  ${getDomainEmoji(p.domain)} ${p.domain}
+                </span>
+                <div class="font-semibold text-slate-800 text-xs">${p.journal}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">${p.pubDate}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="font-bold text-slate-900 hover:text-emerald-700 cursor-pointer btn-open-detail" data-paper-id="${p.id}">
+                  ${p.titleKo}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 leading-relaxed">${p.topic}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-sky-50 text-sky-700 border border-sky-200 mb-1">
+                  ${p.methodType}
+                </span>
+                <div class="text-xs text-slate-700 leading-relaxed">${p.methodology}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="text-xs text-slate-700 leading-relaxed">${p.issue}</div>
+              </td>
+              <td class="py-3.5 px-4 text-center whitespace-nowrap space-y-1.5">
+                <div>
+                  <button type="button" data-bookmark-id="${p.id}" class="btn-bookmark px-2.5 py-1 rounded-md text-xs font-semibold border ${
+                    isBookmarked ? "bg-amber-50 border-amber-300 text-amber-700" : "bg-white border-slate-200 text-slate-600"
+                  }">
+                    ${isBookmarked ? "★ 저장됨" : "☆ 북마크"}
+                  </button>
+                </div>
+                <div>
+                  <button type="button" data-paper-id="${p.id}" class="btn-open-detail text-xs text-emerald-700 hover:underline font-medium">
+                    상세보기
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // Bind bookmark & detail buttons
+      document.querySelectorAll(".btn-bookmark").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const pid = btn.getAttribute("data-bookmark-id");
+          toggleBookmark(pid);
+        });
+      });
+
+      document.querySelectorAll(".btn-open-detail").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const pid = btn.getAttribute("data-paper-id");
+          openPaperModal(pid);
+        });
+      });
+    }
+
+    // ==========================================
+    // 5. BOOKMARK & MODAL LOGIC
+    // ==========================================
+    function findPaperById(paperId) {
+      for (const wk of Object.keys(WEEKLY_DATA)) {
+        const found = WEEKLY_DATA[wk].papers.find(p => p.id === paperId);
+        if (found) return { paper: found, weekKey: wk };
+      }
+      return null;
+    }
+
+    function toggleBookmark(paperId) {
+      if (currentState.bookmarks[paperId]) {
+        delete currentState.bookmarks[paperId];
+        showToast("북마크에서 해제되었습니다.");
+      } else {
+        const found = findPaperById(paperId);
+        if (found) {
+          currentState.bookmarks[paperId] = {
+            ...found.paper,
+            weekKey: found.weekKey,
+            note: ""
+          };
+          showToast("관심 논문에 북마크되었습니다.");
+        }
+      }
+      saveBookmarks();
+      renderFilteredPapers();
+      renderBookmarksTab();
+    }
+
+    function updateBookmarkBadge() {
+      const count = Object.keys(currentState.bookmarks).length;
+      document.getElementById("bookmarkCountBadge").textContent = count;
+    }
+
+    function openPaperModal(paperId) {
+      const found = findPaperById(paperId);
+      if (!found) return;
+      const p = found.paper;
+      const isBookmarked = Boolean(currentState.bookmarks[p.id]);
+      const existingNote = currentState.bookmarks[p.id]?.note || "";
+
+      const modal = document.getElementById("paperDetailModal");
+      const badges = document.getElementById("modalBadges");
+      const body = document.getElementById("modalContentBody");
+
+      badges.innerHTML = `
+        <span class="px-2.5 py-0.5 rounded-md text-xs font-bold border ${getDomainBadgeStyle(p.domain)}">
+          ${getDomainEmoji(p.domain)} ${p.domain}
+        </span>
+        <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-200 text-slate-800">${p.journal}</span>
+        <span class="text-xs text-slate-500">출판일: ${p.pubDate}</span>
+      `;
+
+      body.innerHTML = `
+        <div class="space-y-2">
+          <h3 class="text-base sm:text-xl font-bold text-slate-900 leading-snug">${p.titleKo}</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-medium">${p.title}</p>
+          <p class="text-xs text-slate-500">저자: ${p.authors} · <a href="${p.doi}" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline font-semibold">${p.doi}</a></p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs sm:text-sm">
+          <div>
+            <div class="font-bold text-emerald-800 mb-0.5">1. 연구 주제 및 목적 (Research Topic)</div>
+            <p class="text-slate-700 leading-relaxed">${p.topic}</p>
+          </div>
+          <div>
+            <div class="font-bold text-sky-800 mb-0.5">2. 주요 방법론 및 데이터 (Methodology & Tools)</div>
+            <p class="text-slate-700 leading-relaxed">${p.methodology}</p>
+          </div>
+          <div>
+            <div class="font-bold text-amber-900 mb-0.5">3. 핵심 이슈 및 학술·정책적 시사점 (Key Issues & Findings)</div>
+            <p class="text-slate-700 leading-relaxed">${p.issue}</p>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold text-slate-700">영문 초록 발췌 (Original Abstract Excerpt)</div>
+          <p class="text-xs text-slate-600 bg-slate-100 p-3.5 rounded-xl font-mono leading-relaxed">${p.abstract}</p>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-slate-200">
+          <label for="modalNoteTextarea" class="block text-xs font-bold text-slate-800">
+            📝 내 연구 노트 / 코멘트 남기기 (저장 시 북마크함에 함께 보관됩니다)
+          </label>
+          <textarea id="modalNoteTextarea" rows="3" placeholder="이 논문의 방법론이나 시사점을 내 연구에 어떻게 활용할지 메모해 보세요..." class="w-full p-3 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">${existingNote}</textarea>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <button type="button" id="btnCopyBibtex" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 bg-white hover:bg-slate-50 text-slate-700">
+              📋 APA 인용문 복사
+            </button>
+            <button type="button" id="btnSaveNoteModal" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition">
+              ${isBookmarked ? "노트 업데이트 및 저장" : "북마크 추가 및 노트 저장"}
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove("hidden");
+
+      document.getElementById("btnCopyBibtex").addEventListener("click", () => {
+        const citation = `${p.authors} (2026). ${p.title}. ${p.journal}. ${p.doi}`;
+        copyTextToClipboard(citation, "APA 형식 인용문이 복사되었습니다.");
+      });
+
+      document.getElementById("btnSaveNoteModal").addEventListener("click", () => {
+        const noteVal = document.getElementById("modalNoteTextarea").value.trim();
+        currentState.bookmarks[p.id] = {
+          ...p,
+          weekKey: found.weekKey,
+          note: noteVal
+        };
+        saveBookmarks();
+        renderFilteredPapers();
+        renderBookmarksTab();
+        modal.classList.add("hidden");
+        showToast("연구 노트와 북마크가 저장되었습니다.");
+      });
+    }
+
+    function renderBookmarksTab() {
+      const container = document.getElementById("bookmarksListContainer");
+      const items = Object.values(currentState.bookmarks);
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-200 space-y-2">
+            <div class="text-2xl">🔖</div>
+            <div class="text-sm font-bold text-slate-700">아직 북마크한 논문이 없습니다.</div>
+            <p class="text-xs text-slate-500">논문 카드 우측 상단의 북마크 아이콘을 눌러 관심 논문을 모아보세요.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(p => `
+        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-xs font-bold border ${getDomainBadgeStyle(p.domain)}">${p.domain}</span>
+              <span class="text-xs font-semibold text-slate-800">${p.journal}</span>
+              <span class="text-xs text-slate-400">(${p.pubDate})</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" data-edit-id="${p.id}" class="btn-bm-detail text-xs font-semibold text-emerald-700 hover:underline">노트 수정</button>
+              <button type="button" data-remove-id="${p.id}" class="btn-bm-remove text-xs text-rose-600 hover:underline">삭제</button>
+            </div>
+          </div>
+          <h4 class="text-sm font-bold text-slate-900">${p.titleKo}</h4>
+          <p class="text-xs text-slate-500">${p.title}</p>
+          <div class="text-xs text-slate-700 bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div><strong class="text-emerald-700">[주제]</strong> ${p.topic}</div>
+            <div><strong class="text-sky-700">[방법론]</strong> ${p.methodology}</div>
+            <div><strong class="text-amber-800">[이슈]</strong> ${p.issue}</div>
+          </div>
+          ${p.note ? `
+            <div class="text-xs bg-amber-50/80 border border-amber-200 text-amber-900 p-2.5 rounded-lg">
+              <strong>📝 내 연구 노트:</strong> ${p.note}
+            </div>
+          ` : ""}
+        </div>
+      `).join("");
+
+      container.querySelectorAll(".btn-bm-detail").forEach(btn => {
+        btn.addEventListener("click", () => openPaperModal(btn.getAttribute("data-edit-id")));
+      });
+      container.querySelectorAll(".btn-bm-remove").forEach(btn => {
+        btn.addEventListener("click", () => toggleBookmark(btn.getAttribute("data-remove-id")));
+      });
+    }
+
+    // ==========================================
+    // 6. TARGET 19 JOURNALS DIRECTORY TAB
+    // ==========================================
+    function renderJournalsDirectory() {
+      const weekObj = WEEKLY_DATA[currentState.weekKey];
+      const grid = document.getElementById("journalsDirectoryGrid");
+
+      grid.innerHTML = TARGET_JOURNALS.map(j => {
+        const count = weekObj.papers.filter(p => p.journal === j.name).length;
+        const badgeClass = getDomainBadgeStyle(j.domain);
+        return `
+          <div data-journal-name="${j.name}" class="journal-card cursor-pointer p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-emerald-400 hover:shadow-sm transition flex flex-col justify-between gap-3">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-2 py-0.5 rounded text-xs font-bold border ${badgeClass}">${getDomainEmoji(j.domain)} ${j.domain}</span>
+                  ${j.secondaryDomain ? `<span class="px-2 py-0.5 rounded text-xs font-bold border ${getDomainBadgeStyle(j.secondaryDomain)}">${getDomainEmoji(j.secondaryDomain)} ${j.secondaryDomain}</span>` : ""}
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-xs font-bold ${count > 0 ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"}">
+                  금주 ${count}편
+                </span>
+              </div>
+              <h4 class="text-sm font-bold text-slate-900">${j.name}</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">${j.focus}</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-500">
+              <span>${j.publisher} · ISSN ${j.issn}</span>
+              <span class="text-emerald-700 font-semibold">논문 필터링 →</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      grid.querySelectorAll(".journal-card").forEach(card => {
+        card.addEventListener("click", () => {
+          const jName = card.getAttribute("data-journal-name");
+          currentState.journalFilter = jName;
+          currentState.domainFilter = "ALL";
+          document.getElementById("journalFilterSelect").value = jName;
+          updateDomainButtonsUI();
+          switchTab("overview");
+          renderWeeklyOverview();
+          showToast(`'${jName}' 저널 논문으로 필터링되었습니다.`);
+        });
+      });
+    }
+
+    // ==========================================
+    // 7. ANALYTICS CHARTS (Chart.js)
+    // ==========================================
+    let keywordChartInstance = null;
+    let domainChartInstance = null;
+
+    function renderAnalyticsCharts() {
+      const weekObj = WEEKLY_DATA[currentState.weekKey];
+      if (!weekObj || typeof Chart === "undefined") return;
+
+      const ctxKw = document.getElementById("chartKeywords");
+      const ctxDom = document.getElementById("chartDomains");
+      if (!ctxKw || !ctxDom) return;
+
+      if (keywordChartInstance) keywordChartInstance.destroy();
+      if (domainChartInstance) domainChartInstance.destroy();
+
+      keywordChartInstance = new Chart(ctxKw, {
+        type: "bar",
+        data: {
+          labels: weekObj.topKeywords.map(k => k.word.split(" (")[0]),
+          datasets: [{
+            label: "금주 논문 출현 빈도 (편)",
+            data: weekObj.topKeywords.map(k => k.count),
+            backgroundColor: "rgba(5, 150, 105, 0.8)",
+            borderColor: "rgb(5, 150, 105)",
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { beginAtZero: true, ticks: { precision: 0 } }
+          }
+        }
+      });
+
+      const domains = ["건축", "도시", "조경", "기후변화", "재난재해"];
+      const counts = domains.map(d => weekObj.papers.filter(p => p.domain === d).length);
+
+      domainChartInstance = new Chart(ctxDom, {
+        type: "doughnut",
+        data: {
+          labels: ["건축 (Architecture)", "도시 (Urban)", "조경 (Landscape)", "기후변화 (Climate)", "재난재해 (Disaster)"],
+          datasets: [{
+            data: counts,
+            backgroundColor: [
+              "#4f46e5",
+              "#0284c7",
+              "#059669",
+              "#d97706",
+              "#e11d48"
+            ],
+            borderWidth: 2,
+            borderColor: "#ffffff"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { boxWidth: 12, font: { size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // 8. INTERACTIVE HANDLERS & SIMULATION
+    // ==========================================
+    function switchTab(tabId) {
+      currentState.activeTab = tabId;
+      const tabs = ["overview", "analytics", "journals", "bookmarks", "pipeline"];
+      tabs.forEach(t => {
+        const sec = document.getElementById(`tab-${t}`);
+        if (sec) {
+          if (t === tabId) sec.classList.remove("hidden");
+          else sec.classList.add("hidden");
+        }
+      });
+
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        if (btn.getAttribute("data-tab") === tabId) {
+          btn.className = "nav-tab px-3 py-1.5 rounded-lg font-semibold bg-emerald-50 text-emerald-700 transition whitespace-nowrap flex items-center gap-1.5";
+        } else {
+          btn.className = "nav-tab px-3 py-1.5 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap flex items-center gap-1.5";
+        }
+      });
+
+      if (tabId === "analytics") {
+        setTimeout(renderAnalyticsCharts, 60);
+      } else if (tabId === "journals") {
+        renderJournalsDirectory();
+      } else if (tabId === "bookmarks") {
+        renderBookmarksTab();
+      }
+    }
+
+    function updateDomainButtonsUI() {
+      document.querySelectorAll(".domain-btn").forEach(btn => {
+        const dom = btn.getAttribute("data-domain");
+        if (dom === currentState.domainFilter) {
+          btn.className = "domain-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "domain-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+        }
+      });
+    }
+
+    function updateClearSearchBtn() {
+      const btn = document.getElementById("btnClearSearch");
+      if (currentState.searchQuery.trim().length > 0) {
+        btn.classList.remove("hidden");
+      } else {
+        btn.classList.add("hidden");
+      }
+    }
+
+    function resetAllFilters() {
+      currentState.domainFilter = "ALL";
+      currentState.journalFilter = "ALL";
+      currentState.methodFilter = "ALL";
+      currentState.searchQuery = "";
+      document.getElementById("searchInput").value = "";
+      document.getElementById("journalFilterSelect").value = "ALL";
+      document.getElementById("methodFilterSelect").value = "ALL";
+      updateDomainButtonsUI();
+      updateClearSearchBtn();
+      renderWeeklyOverview();
+      showToast("모든 검색 필터가 초기화되었습니다.");
+    }
+
+    function runSundayBatchSimulation() {
+      const btn = document.getElementById("btnRunBatchSim");
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳ OpenAlex & RSS 수집·요약 중...</span>`;
+
+      setTimeout(() => {
+        if (!currentState.simulatedAdded) {
+          const newPaper = {
+            id: "w44-sim-21",
+            domain: "도시",
+            journal: "Landscape and Urban Planning",
+            pubDate: "2026-11-01",
+            title: "Real-time optimization of urban roadside green infrastructure for ultrafine particle deposition and pedestrian cooling",
+            titleKo: "[실시간 수집] 보행자 열쾌적성 및 초미세먼지 침착 극대화를 위한 도시 가로변 그린 인프라 다층 식재 구조 최적화",
+            authors: "Kim, H. J., & Baldauf, R.",
+            doi: "https://doi.org/10.1016/j.landurbplan.2026.105299",
+            methodType: "시뮬레이션/모델링",
+            impactScore: 97,
+            topic: "가로변 식재대(수벽+교목) 높이와 다공성이 차도에서 보도로 유입되는 초미세먼지 차단 및 보행로 냉각에 미치는 상호작용 규명",
+            methodology: "ENVI-met 에어로졸-열수지 결합 모델과 도로변 실측 센서 네트워크 비교 검증",
+            issue: "수관 밀도가 너무 높으면 차도 오염물질이 협곡 내에 정체되므로, 하부 관목 수벽(1.2m)과 다공성 수관 교목을 조합할 때 보행자 호흡선 농도를 42% 저감",
+            keywords: ["Nature-based Solutions (자연기반해법)", "ENVI-met & LiDAR Canopy", "Urban Heat Island (도시열섬)"],
+            abstract: "Roadside vegetation acts as both a biological filter and an aerodynamic baffle in urban street canyons..."
+          };
+          WEEKLY_DATA["2026-W44"].papers.unshift(newPaper);
+          WEEKLY_DATA["2026-W44"].topKeywords[1].count += 1;
+          currentState.simulatedAdded = true;
+          currentState.weekKey = "2026-W44";
+          document.getElementById("weekSelect").value = "2026-W44";
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span>일요일 배치 완료 (+신규 논문 반영)</span>
+        `;
+        renderWeeklyOverview();
+        if (currentState.activeTab === "analytics") renderAnalyticsCharts();
+        if (currentState.activeTab === "journals") renderJournalsDirectory();
+        showToast("일요일 저녁 자동 수집·요약 배치가 실행되어 최신 논문이 추가되었습니다!");
+      }, 900);
+    }
+
+    function buildNewsletterPreview() {
+      const weekObj = WEEKLY_DATA[currentState.weekKey];
+      const box = document.getElementById("newsletterPreviewBox");
+      box.innerHTML = `
+        <div class="font-bold text-slate-900 text-sm">[Sunday Scholar Pulse] ${weekObj.weekLabel} 주간 논문 트렌드 리포트</div>
+        <div class="text-slate-600">이번 주 5대 분야 19개 저널에서 총 <strong>${weekObj.papers.length}편</strong>의 논문이 수집·요약되었습니다.</div>
+        <div class="p-2.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-950">
+          <strong>📌 한 줄 핵심 트렌드:</strong> ${weekObj.headline}
+        </div>
+        <div class="space-y-1">
+          <div class="font-semibold text-slate-800">🔥 금주 주목할 대표 논문 3선:</div>
+          ${weekObj.papers.slice(0, 3).map((p, idx) => `
+            <div>${idx + 1}. <strong>[${p.domain} · ${p.journal}]</strong> ${p.titleKo}</div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function exportWeeklyMarkdown() {
+      const weekObj = WEEKLY_DATA[currentState.weekKey];
+      const filtered = getFilteredPapers();
+      let md = `# [Sunday Scholar Pulse] ${weekObj.weekLabel}\n\n`;
+      md += `> **핵심 헤드라인:** ${weekObj.headline}\n\n`;
+      md += `## 1. 한 주간의 논문 트렌드 종합\n${weekObj.narrative}\n\n`;
+      md += `## 2. 출판 논문 구조화 요약 (${filtered.length}편)\n\n`;
+      filtered.forEach((p, idx) => {
+        md += `### ${idx + 1}. [${p.domain} | ${p.journal}] ${p.titleKo}\n`;
+        md += `- **원제:** ${p.title} (${p.pubDate})\n`;
+        md += `- **연구 주제:** ${p.topic}\n`;
+        md += `- **주요 방법론:** ${p.methodology}\n`;
+        md += `- **핵심 이슈:** ${p.issue}\n`;
+        md += `- **원문 링크:** ${p.doi}\n\n`;
+      });
+      copyTextToClipboard(md, `현재 주차 논문 ${filtered.length}편의 Markdown 리포트가 클립보드에 복사되었습니다!`);
+    }
+
+    // ==========================================
+    // 9. INITIALIZATION
+    // ==========================================
+    window.addEventListener("DOMContentLoaded", () => {
+      fetch("data/weeks_manifest.json")
+        .then(r => r.ok ? r.json() : null)
+        .then(liveData => {
+          if (liveData && typeof liveData === "object" && Object.keys(liveData).length > 0) {
+            Object.assign(WEEKLY_DATA, liveData);
+            const weekSelectEl = document.getElementById("weekSelect");
+            if (weekSelectEl) {
+              const sortedKeys = Object.keys(WEEKLY_DATA).sort().reverse();
+              weekSelectEl.innerHTML = sortedKeys.map((wk, idx) => {
+                const wObj = WEEKLY_DATA[wk];
+                return `<option value="${wk}">${wObj.weekLabel || wk}${idx === 0 ? " · 최신호" : ""}</option>`;
+              }).join("");
+              currentState.weekKey = sortedKeys[0];
+              renderWeeklyOverview();
+            }
+          }
+        })
+        .catch(() => {});
+      loadSavedState();
+      populateJournalDropdown();
+      updateBookmarkBadge();
+      renderWeeklyOverview();
+
+      // Navigation tabs
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          switchTab(btn.getAttribute("data-tab"));
+        });
+      });
+
+      // Week selector
+      document.getElementById("weekSelect").addEventListener("change", (e) => {
+        currentState.weekKey = e.target.value;
+        renderWeeklyOverview();
+        if (currentState.activeTab === "analytics") renderAnalyticsCharts();
+        if (currentState.activeTab === "journals") renderJournalsDirectory();
+        showToast(`${WEEKLY_DATA[currentState.weekKey].weekLabel} 데이터로 전환되었습니다.`);
+      });
+
+      // Toggle Synthesis Card
+      document.getElementById("btnToggleSynthesis").addEventListener("click", () => {
+        currentState.synthesisExpanded = !currentState.synthesisExpanded;
+        const body = document.getElementById("synthesisBody");
+        const btn = document.getElementById("btnToggleSynthesis");
+        if (currentState.synthesisExpanded) {
+          body.classList.remove("hidden");
+          btn.textContent = "요약 리포트 접기 ▲";
+        } else {
+          body.classList.add("hidden");
+          btn.textContent = "요약 리포트 펼치기 ▼";
+        }
+      });
+
+      // Domain buttons
+      document.querySelectorAll(".domain-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentState.domainFilter = btn.getAttribute("data-domain");
+          updateDomainButtonsUI();
+          renderFilteredPapers();
+        });
+      });
+
+      // Search input
+      const searchInput = document.getElementById("searchInput");
+      searchInput.addEventListener("input", (e) => {
+        currentState.searchQuery = e.target.value;
+        updateClearSearchBtn();
+        renderFilteredPapers();
+      });
+
+      document.getElementById("btnClearSearch").addEventListener("click", () => {
+        currentState.searchQuery = "";
+        searchInput.value = "";
+        updateClearSearchBtn();
+        renderWeeklyOverview();
+      });
+
+      // Journal & Method & Sort selects
+      document.getElementById("journalFilterSelect").addEventListener("change", (e) => {
+        currentState.journalFilter = e.target.value;
+        renderFilteredPapers();
+      });
+
+      document.getElementById("methodFilterSelect").addEventListener("change", (e) => {
+        currentState.methodFilter = e.target.value;
+        renderFilteredPapers();
+      });
+
+      document.getElementById("sortSelect").addEventListener("change", (e) => {
+        currentState.sortBy = e.target.value;
+        renderFilteredPapers();
+      });
+
+      document.getElementById("btnResetFilters").addEventListener("click", resetAllFilters);
+
+      // View mode toggle
+      const btnCard = document.getElementById("btnViewCard");
+      const btnTable = document.getElementById("btnViewTable");
+      btnCard.addEventListener("click", () => {
+        currentState.viewMode = "card";
+        btnCard.className = "px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-900 shadow-sm transition";
+        btnTable.className = "px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition";
+        renderFilteredPapers();
+      });
+      btnTable.addEventListener("click", () => {
+        currentState.viewMode = "table";
+        btnTable.className = "px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-slate-900 shadow-sm transition";
+        btnCard.className = "px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition";
+        renderFilteredPapers();
+      });
+
+      // Export weekly Markdown
+      document.getElementById("btnExportWeeklyMd").addEventListener("click", exportWeeklyMarkdown);
+
+      // Batch simulation button
+      document.getElementById("btnRunBatchSim").addEventListener("click", runSundayBatchSimulation);
+
+      // Modals
+      document.getElementById("btnClosePaperModal").addEventListener("click", () => {
+        document.getElementById("paperDetailModal").classList.add("hidden");
+      });
+      document.getElementById("paperDetailModal").addEventListener("click", (e) => {
+        if (e.target.id === "paperDetailModal") {
+          document.getElementById("paperDetailModal").classList.add("hidden");
+        }
+      });
+
+      document.getElementById("btnOpenAlertModal").addEventListener("click", () => {
+        buildNewsletterPreview();
+        document.getElementById("alertModal").classList.remove("hidden");
+      });
+      document.getElementById("btnCloseAlertModal").addEventListener("click", () => {
+        document.getElementById("alertModal").classList.add("hidden");
+      });
+      document.getElementById("alertModal").addEventListener("click", (e) => {
+        if (e.target.id === "alertModal") {
+          document.getElementById("alertModal").classList.add("hidden");
+        }
+      });
+      document.getElementById("btnTestSendAlert").addEventListener("click", () => {
+        const email = document.getElementById("alertEmailInput").value;
+        document.getElementById("alertModal").classList.add("hidden");
+        showToast(`매주 일요일 19:00 KST 정기 발송 설정이 저장되었으며, ${email}로 테스트 브리핑을 발송했습니다.`);
+      });
+
+      // Bookmarks tab actions
+      document.getElementById("btnExportBookmarksMd").addEventListener("click", () => {
+        const items = Object.values(currentState.bookmarks);
+        if (items.length === 0) {
+          showToast("내보낼 북마크 논문이 없습니다.");
+          return;
+        }
+        let md = `# 내 관심 논문 & 연구 노트 (${items.length}편)\n\n`;
+        items.forEach((p, i) => {
+          md += `## ${i + 1}. [${p.domain} | ${p.journal}] ${p.titleKo}\n`;
+          md += `- **원제:** ${p.title}\n`;
+          md += `- **주제:** ${p.topic}\n`;
+          md += `- **방법론:** ${p.methodology}\n`;
+          md += `- **이슈:** ${p.issue}\n`;
+          if (p.note) md += `- **내 연구 노트:** ${p.note}\n`;
+          md += `- **DOI:** ${p.doi}\n\n`;
+        });
+        copyTextToClipboard(md, "북마크 논문 및 연구 노트가 Markdown으로 복사되었습니다.");
+      });
+
+      document.getElementById("btnClearBookmarks").addEventListener("click", () => {
+        currentState.bookmarks = {};
+        saveBookmarks();
+        renderBookmarksTab();
+        renderFilteredPapers();
+        showToast("북마크함이 초기화되었습니다.");
+      });
+
+      // Pipeline code copy buttons
+      document.querySelectorAll(".btn-copy-code").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.getAttribute("data-copy-target");
+          const codeEl = document.getElementById(targetId);
+          if (codeEl) {
+            copyTextToClipboard(codeEl.textContent, "파이프라인 코드가 클립보드에 복사되었습니다.");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
