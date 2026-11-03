@@ -1,0 +1,68 @@
+name: Sunday Scholar Pulse - Weekly Digest
+
+on:
+  schedule:
+    # 매주 일요일 19:00 KST (UTC 기준 일요일 10:00) 자동 실행
+    - cron: '0 10 * * 0'
+  workflow_dispatch:
+    inputs:
+      days_back:
+        description: '수집할 과거 일수 (기본 7일)'
+        required: false
+        default: '7'
+      force_resummarize:
+        description: '기존 캐시 무시 및 전체 재요약 여부 (true/false)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  collect-summarize-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Weekly Collection, Gemini Summarization & Trend Synthesis
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENALEX_POLITE_EMAIL: ${{ secrets.OPENALEX_POLITE_EMAIL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_TO_EMAIL: ${{ secrets.ALERT_TO_EMAIL }}
+          DAYS_BACK: ${{ github.event.inputs.days_back || '7' }}
+          FORCE_RESUMMARIZE: ${{ github.event.inputs.force_resummarize || 'false' }}
+        run: |
+          python scripts/fetch_and_summarize.py
+
+      - name: Commit and push updated weekly digest data
+        run: |
+          git config user.name "sunday-scholar-bot"
+          git config user.email "sunday-scholar-bot@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No new changes to commit."
+          else
+            WEEK_TAG=$(date +'%Y-W%V')
+            git commit -m "chore(digest): update weekly journal digest (${WEEK_TAG})"
+            git push origin HEAD
+          fi
