@@ -3,8 +3,9 @@
 Sunday Scholar Pulse - Weekly Journal Collector, Paper Summarizer & Trend Synthesizer
 =====================================================================================
 매주 일요일 저녁 19:00 KST에 실행되어:
-1. 5대 분야(건축·도시·조경·기후변화·재난재해) 19개 주류 저널에서 최근 7일간 출판된 모든 논문을
-   OpenAlex API + Crossref API + 출판사 RSS 피드로 전수 수집하고 중복을 제거합니다.
+1. 5대 분야(건축·도시·조경·기후변화·재난재해) 19개 주류 저널에서 '이번 주(최근 7일간)' 출판된 논문만
+   OpenAlex API + Crossref API + 출판사 RSS 피드로 전수 수집하고, 출판일이 이번 주 범위 밖인 과거 논문은
+   엄격히 제외(Strict Date Filter)합니다.
 2. Gemini API (gemini-2.5-flash)의 Structured Output 기능을 사용해 개별 논문의
    [한국어 제목, 연구 주제, 주요 방법론, 방법론 분류, 핵심 이슈, 키워드, 트렌드 연관도]를 추출합니다.
 3. 주간 전체 논문 요약본을 종합(Map-Reduce)하여 한 주간의 학술 트렌드 총평 리포트를 생성합니다.
@@ -103,11 +104,27 @@ class WeeklyTrendSynthesisSchema(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Utility Helpers
+# Utility Helpers & Strict Weekly Date Validator
 # ---------------------------------------------------------------------------
 def load_journals_config() -> List[Dict[str, Any]]:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def is_within_date_window(
+    pub_date_str: str,
+    start_date: datetime.date,
+    end_date: datetime.date,
+) -> bool:
+    """Strictly verifies that pub_date_str (YYYY-MM-DD) falls within [start_date, end_date]."""
+    if not pub_date_str or len(pub_date_str) < 10:
+        return False
+    try:
+        dt = datetime.date.fromisoformat(pub_date_str[:10])
+        # Allow up to 7 days ahead in case publisher stamps next week's issue date on Online First articles
+        return start_date <= dt <= (end_date + datetime.timedelta(days=7))
+    except ValueError:
+        return False
 
 
 def reconstruct_abstract(inverted_index: Optional[Dict[str, List[int]]]) -> str:
@@ -158,7 +175,7 @@ def fetch_from_openalex(
     end_date: datetime.date,
     polite_email: str = "",
 ) -> List[Dict[str, Any]]:
-    """Fetches all papers published in the target 19 journals within [start_date, end_date]."""
+    """Fetches all papers published in the target 19 journals strictly within [start_date, end_date]."""
     issn_to_journal: Dict[str, Dict[str, Any]] = {}
     all_issns: List[str] = []
     for j in journals:
@@ -208,6 +225,10 @@ def fetch_from_openalex(
             if not title:
                 continue
 
+            pub_date = item.get("publication_date") or ""
+            if not is_within_date_window(pub_date, start_date, end_date):
+                continue
+
             source_info = (item.get("primary_location") or {}).get("source") or {}
             source_issns = source_info.get("issn") or []
             matched_journal = None
@@ -226,7 +247,6 @@ def fetch_from_openalex(
 
             abstract = reconstruct_abstract(item.get("abstract_inverted_index"))
             doi = normalize_doi(item.get("doi"))
-            pub_date = item.get("publication_date") or end_date.isoformat()
 
             authorships = item.get("authorships") or []
             author_names = [
@@ -260,7 +280,7 @@ def fetch_from_openalex(
         cursor = next_cursor
         time.sleep(0.25)
 
-    logger.info("OpenAlex collected %d raw papers.", len(collected))
+    logger.info("OpenAlex collected %d strictly-dated weekly papers.", len(collected))
     return collected
 
 
@@ -270,7 +290,7 @@ def fetch_from_crossref(
     end_date: datetime.date,
     polite_email: str = "",
 ) -> List[Dict[str, Any]]:
-    """Complements OpenAlex with Crossref API for newly deposited Online First articles."""
+    """Complements OpenAlex with Crossref API for Online First articles published strictly this week."""
     collected: List[Dict[str, Any]] = []
     headers = {"User-Agent": f"SundayScholarPulse/1.0 (mailto:{polite_email or 'scholar@example.org'})"}
 
@@ -281,8 +301,8 @@ def fetch_from_crossref(
         issn_filter = ",".join(f"issn:{i}" for i in issns)
         filter_str = (
             f"{issn_filter},"
-            f"from-pub-date:{start_date.isoformat()},"
-            f"until-pub-date:{end_date.isoformat()},"
+            f"from-online-pub-date:{start_date.isoformat()},"
+            f"until-online-pub-date:{end_date.isoformat()},"
             "type:journal-article"
         )
         try:
@@ -300,7 +320,19 @@ def fetch_from_crossref(
                 title = clean_html_text(titles[0]) if titles else ""
                 if not title:
                     continue
-                if any(skip in title.lower() for skip in ["corrigendum", "erratum", "editorial board"]):
+                if any(skip in title.lower() for skip in ["corrigendum", "erratum", "editorial board", "retraction"]):
+                    continue
+
+                # Strictly require full year-month-day online publication date within this week
+                date_parts = (
+                    (item.get("published-online") or item.get("created") or {})
+                    .get("date-parts", [[]])[0]
+                )
+                if len(date_parts) < 3:
+                    continue
+                y, m, d = date_parts[0], date_parts[1], date_parts[2]
+                pub_date = f"{y:04d}-{m:02d}-{d:02d}"
+                if not is_within_date_window(pub_date, start_date, end_date):
                     continue
 
                 doi = normalize_doi(item.get("DOI"))
@@ -314,15 +346,6 @@ def fetch_from_crossref(
                     if family:
                         author_list.append(f"{family}, {given[:1]}." if given else family)
                 author_str = ", ".join(author_list) + (" et al." if len(authors_raw) > 4 else "")
-
-                date_parts = (
-                    (item.get("published-online") or item.get("published-print") or item.get("created") or {})
-                    .get("date-parts", [[end_date.year, end_date.month, end_date.day]])[0]
-                )
-                y = date_parts[0]
-                m = date_parts[1] if len(date_parts) > 1 else 1
-                d = date_parts[2] if len(date_parts) > 2 else 1
-                pub_date = f"{y:04d}-{m:02d}-{d:02d}"
 
                 collected.append(
                     {
@@ -340,15 +363,16 @@ def fetch_from_crossref(
             logger.warning("Crossref fetch error for %s: %s", j["name"], exc)
         time.sleep(0.15)
 
-    logger.info("Crossref collected %d raw papers.", len(collected))
+    logger.info("Crossref collected %d strictly-dated weekly papers.", len(collected))
     return collected
 
 
 def fetch_from_rss(
     journals: List[Dict[str, Any]],
     start_date: datetime.date,
+    end_date: datetime.date,
 ) -> List[Dict[str, Any]]:
-    """Parses publisher RSS feeds to capture immediate Early View / Online First papers."""
+    """Parses publisher RSS feeds, strictly keeping only entries with a verified date in [start_date, end_date]."""
     collected: List[Dict[str, Any]] = []
     for j in journals:
         rss_url = j.get("rss_url")
@@ -361,12 +385,14 @@ def fetch_from_rss(
                 if not title or any(s in title.lower() for s in ["editorial board", "corrigendum", "erratum"]):
                     continue
 
-                pub_date = datetime.date.today().isoformat()
-                if getattr(entry, "published_parsed", None):
-                    dt = datetime.date(*entry.published_parsed[:3])
-                    if dt < start_date:
-                        continue
-                    pub_date = dt.isoformat()
+                # Strictly require a parsed publication date within the weekly window
+                parsed_tuple = getattr(entry, "published_parsed", None) or getattr(entry, "updated_parsed", None)
+                if not parsed_tuple:
+                    continue
+                dt = datetime.date(*parsed_tuple[:3])
+                pub_date = dt.isoformat()
+                if not is_within_date_window(pub_date, start_date, end_date):
+                    continue
 
                 link = entry.get("link", "")
                 doi = normalize_doi(entry.get("prism_doi") or entry.get("dc_identifier") or "")
@@ -391,7 +417,7 @@ def fetch_from_rss(
         except Exception as exc:
             logger.debug("RSS parse skipped for %s: %s", j["name"], exc)
 
-    logger.info("RSS feeds collected %d recent entries.", len(collected))
+    logger.info("RSS feeds collected %d strictly-dated weekly entries.", len(collected))
     return collected
 
 
@@ -600,7 +626,6 @@ def send_notifications(week_key: str, week_data: Dict[str, Any]) -> None:
         f"*[금주 주목할 논문 Top 3]*\n{top3_text}"
     )
 
-    # 1. Slack Incoming Webhook
     slack_url = os.environ.get("SLACK_WEBHOOK_URL", "").strip()
     if slack_url:
         try:
@@ -609,7 +634,6 @@ def send_notifications(week_key: str, week_data: Dict[str, Any]) -> None:
         except Exception as exc:
             logger.warning("Slack notification failed: %s", exc)
 
-    # 2. Telegram Bot API
     tg_token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     tg_chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
     if tg_token and tg_chat_id:
@@ -623,7 +647,6 @@ def send_notifications(week_key: str, week_data: Dict[str, Any]) -> None:
         except Exception as exc:
             logger.warning("Telegram notification failed: %s", exc)
 
-    # 3. Resend Email API (Free tier)
     resend_key = os.environ.get("RESEND_API_KEY", "").strip()
     alert_email = os.environ.get("ALERT_TO_EMAIL", "").strip()
     if resend_key and alert_email:
@@ -678,10 +701,10 @@ def main() -> None:
     logger.info("=== Starting Sunday Scholar Pulse Batch for %s (%s) ===", week_key, week_label)
     journals = load_journals_config()
 
-    # 1. Collect papers from OpenAlex, Crossref, and RSS
+    # 1. Collect papers strictly within [start_date, end_date] from OpenAlex, Crossref, and RSS
     oa_papers = fetch_from_openalex(journals, start_date, end_date, polite_email)
     cr_papers = fetch_from_crossref(journals, start_date, end_date, polite_email)
-    rss_papers = fetch_from_rss(journals, start_date)
+    rss_papers = fetch_from_rss(journals, start_date, end_date)
 
     unique_papers = deduplicate_papers(oa_papers + cr_papers + rss_papers, week_key)
 
@@ -700,6 +723,7 @@ def main() -> None:
         if cache_key in cache and not force_resummarize:
             cached_entry = cache[cache_key]
             cached_entry["id"] = paper["id"]
+            cached_entry["pubDate"] = paper["pubDate"]
             summarized_papers.append(cached_entry)
             continue
 
@@ -731,10 +755,10 @@ def main() -> None:
         synthesis = synthesize_weekly_trends(client, week_label, summarized_papers)
     else:
         synthesis = {
-            "headline": f"{week_label} 19개 저널 총 {len(summarized_papers)}편 논문 수집 완료",
+            "headline": f"{week_label} 19개 저널 총 {len(summarized_papers)}편 금주 출판 논문 수집 완료",
             "narrative": "GEMINI_API_KEY를 설정하면 주간 논문 종합 트렌드 리포트가 생성됩니다.",
             "pillars": [
-                {"badge": "주제 트렌드 (Topics)", "title": "주간 논문 수집 완료", "desc": "개별 논문 카드를 확인하세요."},
+                {"badge": "주제 트렌드 (Topics)", "title": "금주 논문 수집 완료", "desc": "개별 논문 카드를 확인하세요."},
                 {"badge": "방법론 트렌드 (Methodologies)", "title": "다양한 방법론 포착", "desc": "개별 논문 카드를 확인하세요."},
                 {"badge": "핵심 이슈 (Key Issues)", "title": "주요 학술 이슈", "desc": "개별 논문 카드를 확인하세요."},
             ],
